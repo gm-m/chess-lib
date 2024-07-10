@@ -1,5 +1,6 @@
 import { PieceColor } from "./enum/PieceColor";
-import { MoveInvoker, MoveList } from "./move/move";
+import { MoveInvoker } from "./move/move-invoker";
+import { MoveList } from "./move/move-list";
 import Bishop from "./piece/bishop";
 import King from "./piece/king";
 import Knight from "./piece/knight";
@@ -8,11 +9,10 @@ import { PieceBaseClass, PieceType } from "./piece/piece";
 import Rook from "./piece/rook";
 import {
     charToPieceType,
-    getHtmlPieceRappresentation,
+    customLog as prettyLog,
     getPieceColor,
     isAlphabetCharacter,
-    isDigitCharacter,
-    customLog
+    isDigitCharacter
 } from "./utility";
 
 
@@ -263,8 +263,11 @@ export class ChessBoard {
     // trickyFen: string = "rn1q2k1/1p3pb1/p2p2p1/2pP2B1/P1P1r1b1/5p2/1P2BPP1/R2Q1K1R w - - 3 15";
     // trickyFen: string = "4r1k1/3n1p2/pp1p1bp1/2pP4/P1P5/4PN1R/5KP1/1R6 w - - 0 27";
     // trickyFen: string = "4k3/P7/8/8/8/8/8/6K1 w - - 0 1"; // Promotion
+
     trickyFen: string = "7k/p4Q2/6R1/8/8/3K4/8/8 w - - 0 1";
     defaultFen: string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    PGN: string = '';
+
     moveInvoker: MoveInvoker = new MoveInvoker(this);
 
     constructor(fen?: string) {
@@ -273,23 +276,19 @@ export class ChessBoard {
         }
 
         ChessBoard.instance = this;
+        this.getAllLegalMoves();
 
         if (!fen) fen = this.defaultFen;
 
-        // @ts-ignore
-        window.legalMoves = ChessBoard.legalMoves;
-
-        const rewindBtn = document.getElementById("rewindMove");
-        rewindBtn!.addEventListener('click', this.moveInvoker.rewindMove.bind(this.moveInvoker, 2));
-
-        const redoBtn = document.getElementById("redoMove");
-        redoBtn!.addEventListener('click', this.moveInvoker.redoMove.bind(this.moveInvoker, 2));
-
         ChessBoard.parseFen(this.defaultFen);
-        this.renderBoard();
 
         ChessBoard.legalMoves.printMoves();
         this.printBoard();
+    }
+
+    appendToPGN(pgn: string) {
+        this.PGN += pgn;
+        console.log("Updated PGN: ", this.PGN);
     }
 
     static resetBoard() {
@@ -304,8 +303,8 @@ export class ChessBoard {
         }
     }
 
-    public switchSide() {
-        ChessBoard.side === PieceColor.WHITE ? ChessBoard.side = PieceColor.BLACK : ChessBoard.side = PieceColor.WHITE;
+    public flipSide(): PieceColor {
+        return ChessBoard.side === PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
     }
 
     // TODO: Replace hardcoded seventhRankSquares with the following
@@ -522,102 +521,33 @@ export class ChessBoard {
         console.groupEnd();
     }
 
-    public highlightSquares(square: Squares) {
-        ChessBoard.legalMoves.map.get(square)!.forEach((legalMove: Squares) => {
-            const htmlEl = document.getElementById(SQUARE_TO_COORDS[legalMove]);
-
-            if (htmlEl) {
-                htmlEl.classList.add("move-dest");
-
-                if (ChessBoard.board[legalMove] === PieceType.EMPTY) {
-                    const wrappedFunc = this.handleClick.bind(this, square, legalMove);
-                    htmlEl.addEventListener('click', wrappedFunc);
-                    this.eventListenerHandlers.set(legalMove, wrappedFunc);
-                }
-            }
-        });
+    public exportPGN() {
+        return "TODO";
     }
 
-    public resetHighlightedSquares(square: Squares, resetSelf: boolean = false): boolean {
-        let ret: boolean = false;
-        if (ChessBoard.legalMoves.map.has(square)) {
-            ret = true;
-        }
+    public resetHighlightedSquares() {
+        ChessBoard.legalMoves.legalMovesMap.clear();
+    }
 
-        // TODO: Refactor
-        // Remove self from map and eventListenerHandlers
-        if (resetSelf) {
-            const selfSquare = document.getElementById(SQUARE_TO_COORDS[square]);
-            if (selfSquare) {
-                selfSquare.removeEventListener('click', this.eventListenerHandlers.get(square));
-                this.eventListenerHandlers.delete(square);
-            }
-        }
+    public getAllLegalMoves() {
+        for (let rank = 0; rank < 8; rank++) {
+            let file: number = 0;
 
-        for (const [key, value] of ChessBoard.legalMoves.map) {
-            value.forEach((legalMove: Squares) => {
-                const htmlEl = document.getElementById(SQUARE_TO_COORDS[legalMove]);
+            while (file < 16) {
+                let square: number = (rank * 16) + file;
 
-                if (htmlEl && htmlEl.classList.contains("move-dest")) {
-                    htmlEl.classList.remove("move-dest");
-
-                    if (ChessBoard.board[legalMove] === PieceType.EMPTY) {
-                        htmlEl.removeEventListener('click', this.eventListenerHandlers.get(legalMove));
-                        this.eventListenerHandlers.delete(legalMove);
+                // If square is on Board
+                if (!(square & 0x88)) {
+                    if (ChessBoard.board[square] !== PieceType.EMPTY) {
+                        this.getLegalMovesFromSquare(square);
                     }
                 }
-            });
-        }
 
-        ChessBoard.legalMoves.map.clear();
-        return ret;
-    }
-
-    private activeSquare: Squares = Squares.no_sq;
-
-    private handleClick(fromSquare: Squares, toSquare: Squares) {
-        /*
-        * activeSquare = The square which the highlighted squares belongs to
-        *
-        * 1 - Retrieve the clicked square from the css. Binding the
-        * 2 - Set or updates the activeSquare
-        * 3 - If there are no highlighted squares it does
-        * 4 - If there are no highlighted squares it does
-        *
-        * */
-
-        // First time here, uh?
-        if (toSquare === Squares.no_sq) {
-            if (this.activeSquare === Squares.no_sq) {
-                // Check if it's the first player turn based on the color
-                if (ChessBoard.side !== getPieceColor(fromSquare)) {
-                    return;
-                }
-
-                // this.handleAttackedKing();
-                this.activeSquare = fromSquare;
-                this.getLegalMovesFromSquare(fromSquare);
-
-                /* Filter attaced squares and Check if there are any legal moves left */
-
-                // ChessBoard.legalMoves.map.get(square)!.forEach((legalMove: Squares) => {
-                this.highlightSquares(fromSquare);
-            } else {
-                if (this.activeSquare !== fromSquare && ChessBoard.legalMoves.map.has(this.activeSquare)) {
-                    this.setPiece(this.activeSquare, fromSquare);
-                }
-
-                this.activeSquare = Squares.no_sq;
-                this.resetHighlightedSquares(fromSquare);
+                file++;
             }
         }
 
-        // Make move
-        if (toSquare !== Squares.no_sq) {
-            this.activeSquare = Squares.no_sq;
-            this.setPiece(this.activeSquare === Squares.no_sq ? fromSquare : this.activeSquare, toSquare);
-            // this.setPiece(fromSquare, toSquare);
-        }
+        console.log("Legal moves: ", ChessBoard.legalMoves);
     }
 
     public getLegalMovesFromSquare(fromSquare: Squares) {
@@ -658,42 +588,16 @@ export class ChessBoard {
 
     handleAttackedKing() {
         if (this.isWhiteKingAttacked) {
-            customLog("White King is Attacked");
+            prettyLog("White King is Attacked");
             return;
         }
+
         if (this.isBlackKingAttacked) {
-            customLog("Black King is Attacked");
+            prettyLog("Black King is Attacked");
             return;
         }
 
-        customLog("No King is under attack");
-    }
-
-    public eventListenerHandlers: Map<Squares, any> = new Map();
-
-    public renderBoard() {
-        document.querySelector('.chessboard')?.addEventListener("click", (event: Event) => {
-            const target = event.target as HTMLDivElement;
-            console.log("Hello from: ", target.id);
-        });
-
-        ChessBoard.board.forEach((piece: PieceType, square: Squares) => {
-            const htmlEl = document.getElementById(SQUARE_TO_COORDS[square]);
-
-            if (piece !== PieceType.EMPTY && htmlEl) {
-                htmlEl.innerText = getHtmlPieceRappresentation(piece);
-                htmlEl.classList.add("piece");
-
-                // Add click event listener
-                // this.addCLickListener(square, htmlEl);
-            }
-        });
-    }
-
-    addCLickListener(square: Squares, htmlEl: HTMLElement) {
-        const wrappedFunc = this.handleClick.bind(this, square, Squares.no_sq);
-        this.eventListenerHandlers.set(square, wrappedFunc);
-        htmlEl.addEventListener('click', wrappedFunc);
+        prettyLog("No King is under attack");
     }
 
     public printBoard() {
@@ -701,13 +605,16 @@ export class ChessBoard {
         console.log("Board:", ChessBoard.board);
     }
 
-    public setPiece(fromSquare: Squares, toSquare: Squares) {
-        if (ChessBoard.legalMoves.map.has(fromSquare)) {
-            const legalMoves = ChessBoard.legalMoves.map.get(fromSquare)!;
+    public setPiece(fromSquare: Squares, toSquare: Squares): boolean {
+        if (ChessBoard.legalMoves.legalMovesMap.has(fromSquare)) {
+            const legalMoves = ChessBoard.legalMoves.legalMovesMap.get(fromSquare)!;
             if (legalMoves.some((move: Squares) => move === toSquare)) {
                 this.moveInvoker.executeMove({ square: fromSquare }, { square: toSquare });
+                return true;
             }
         }
+
+        return false;
     }
 }
 

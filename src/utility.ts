@@ -46,25 +46,6 @@ export function decodeEnum(el: any) {
     return match ? match[0] : undefined;
 }
 
-export function getHtmlPieceRappresentation(pieceType: PieceType): string {
-    const charToPieceMap: Map<PieceType, string> = new Map([
-        [PieceType.WHITE_PAWN, '♙'],
-        [PieceType.BLACK_PAWN, '♟'],
-        [PieceType.WHITE_ROOK, '♖'],
-        [PieceType.BLACK_ROOK, '♜'],
-        [PieceType.WHITE_KNIGHT, '♘'],
-        [PieceType.BLACK_KNIGHT, '♞'],
-        [PieceType.WHITE_BISHOP, '♗'],
-        [PieceType.BLACK_BISHOP, '♝'],
-        [PieceType.WHITE_QUEEN, '♕'],
-        [PieceType.BLACK_QUEEN, '♛'],
-        [PieceType.WHITE_KING, '♔'],
-        [PieceType.BLACK_KING, '♚'],
-    ]);
-
-    return charToPieceMap.get(pieceType) ?? '';
-}
-
 export function getPieceColor(square: Squares): PieceColor | undefined {
     if (WHITE_PIECES.includes(ChessBoard.board[square])) {
         return PieceColor.WHITE;

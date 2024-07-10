@@ -1,9 +1,8 @@
-import { describe, expect, onTestFinished, test } from 'vitest';
 import { ChessBoard, Squares } from '../chessboard';
 import { PieceColor } from '../enum/PieceColor';
+import { MoveInvoker } from '../move/move-invoker';
 import Knight from './knight';
 import Pawn from './pawn';
-
 
 function getLegalMoves(pieceType: any, square: Squares, color: PieceColor) {
     const legalMoves = pieceType.getLegalMoves(square, color);
@@ -55,5 +54,53 @@ describe("Test Knight Moves", () => {
         expectedLegalMoves.forEach(expectMove => {
             expect(decodedLegalMoves).toContain(expectMove);
         });
+    });
+});
+
+
+describe("Test Rewind Moves", () => {
+    test('rewind moves', () => {
+        ChessBoard.parseFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+
+        const moveInvoker = new MoveInvoker(new ChessBoard());
+        moveInvoker.movesHistory = [
+            {
+                "fromSquareIdx": 100,
+                "toSquareIdx": 68,
+                "captureMove": false,
+                "castlingMove": false
+            },
+            {
+                "fromSquareIdx": 19,
+                "toSquareIdx": 51,
+                "captureMove": false,
+                "castlingMove": false
+            },
+            {
+                "fromSquareIdx": 68,
+                "toSquareIdx": 51,
+                "captureMove": true,
+                "castlingMove": false
+            },
+            {
+                "fromSquareIdx": 3,
+                "toSquareIdx": 51,
+                "captureMove": true,
+                "castlingMove": false
+            }
+        ];
+
+        const expectedBoard = [
+            "r", "n", "b", "e", "k", "b", "n", "r", "o", "o", "o", "o", "o", "o", "o", "o",
+            "p", "p", "p", "e", "p", "p", "p", "p", "o", "o", "o", "o", "o", "o", "o", "o",
+            "e", "e", "e", "e", "e", "e", "e", "e", "o", "o", "o", "o", "o", "o", "o", "o",
+            "e", "e", "e", "q", "e", "e", "e", "e", "o", "o", "o", "o", "o", "o", "o", "o",
+            "e", "e", "e", "e", "e", "e", "e", "e", "o", "o", "o", "o", "o", "o", "o", "o",
+            "e", "e", "e", "e", "e", "e", "e", "e", "o", "o", "o", "o", "o", "o", "o", "o",
+            "P", "P", "P", "P", "e", "P", "P", "P", "o", "o", "o", "o", "o", "o", "o", "o",
+            "R", "N", "B", "Q", "K", "B", "N", "R", "o", "o", "o", "o", "o", "o", "o", "o"
+        ];
+
+        expect(ChessBoard.board).toEqual(expectedBoard);
     });
 });

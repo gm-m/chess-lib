@@ -22,7 +22,7 @@
     "noFallthroughCasesInSwitch": true,
     /* Vitest */
     "types": [
-      "vitest/globals"
+      "vitest/globals",
     ]
   },
   "include": [

@@ -1,6 +1,7 @@
 import { Castling, ChessBoard, Squares } from "../chessboard";
 import { PieceColor } from "../enum/PieceColor";
-import { MoveList, encodeMove } from "../move/move";
+import { encodeMove } from "../move/move-invoker";
+import { MoveList } from "../move/move-list";
 import { BLACK_PIECES, PieceBaseClass, PieceType, WHITE_PIECES } from "./piece";
 
 
@@ -57,7 +58,8 @@ export default class King extends PieceBaseClass {
             // Make sure there are empty squares between King & Rook
             const kingSideEmptySquares: boolean = (() => {
                 if (ChessBoard.side === PieceColor.WHITE) {
-                    return [Squares.e1, Squares.f1].every(square => ChessBoard.board[square] === PieceType.EMPTY);
+                    // return [Squares.e1, Squares.f1].every(square => ChessBoard.board[square] === PieceType.EMPTY);
+                    return [Squares.f1, Squares.g1].every(square => ChessBoard.board[square] === PieceType.EMPTY);
                 } else {
                     return [Squares.f8, Squares.g8].every(square => ChessBoard.board[square] === PieceType.EMPTY);
                 }
@@ -65,7 +67,7 @@ export default class King extends PieceBaseClass {
 
             if (kingSideEmptySquares) {
                 // Make sure king & next square are not under attack
-                const kingSideSquareAttacked: boolean = (() => {
+                const kingSideSquareNotAttacked: boolean = (() => {
                     if (ChessBoard.side === PieceColor.WHITE) {
                         return !ChessBoard.isSquareAttacked(Squares.e1, PieceColor.BLACK) && !ChessBoard.isSquareAttacked(Squares.f1, PieceColor.BLACK);
                     } else {
@@ -73,11 +75,11 @@ export default class King extends PieceBaseClass {
                     }
                 })();
 
-                if (kingSideSquareAttacked) {
+                if (kingSideSquareNotAttacked) {
                     ChessBoard.legalMoves.add(
                         encodeMove({
                             source: ChessBoard.side === PieceColor.WHITE ? Squares.e1 : Squares.e8,
-                            targetSquare: ChessBoard.side === PieceColor.WHITE ? Squares.g1 : Squares.e8,
+                            targetSquare: ChessBoard.side === PieceColor.WHITE ? Squares.g1 : Squares.g8,
                             piece: 0,
                             capture: false,
                             pawn: false,
@@ -92,7 +94,7 @@ export default class King extends PieceBaseClass {
         // Queen Side Castling
         if (isCastlingAvailable) {
             // Make sure there are empty squares between king & rook
-            const kingSideEmptySquares: boolean = (() => {
+            const queenSideEmptySquares: boolean = (() => {
                 if (ChessBoard.side === PieceColor.WHITE) {
                     return [Squares.d1, Squares.c1, Squares.b1].every(square => ChessBoard.board[square] === PieceType.EMPTY);
                 } else {
@@ -100,9 +102,9 @@ export default class King extends PieceBaseClass {
                 }
             })();
 
-            if (kingSideEmptySquares) {
+            if (queenSideEmptySquares) {
                 // Make sure king & next square are not under attack
-                const kingSideSquareAttacked: boolean = (() => {
+                const queenSideSquareNotAttacked: boolean = (() => {
                     if (ChessBoard.side === PieceColor.WHITE) {
                         return !ChessBoard.isSquareAttacked(Squares.e1, PieceColor.BLACK) && !ChessBoard.isSquareAttacked(Squares.d1, PieceColor.BLACK);
                     } else {
@@ -110,7 +112,7 @@ export default class King extends PieceBaseClass {
                     }
                 })();
 
-                if (kingSideSquareAttacked) {
+                if (queenSideSquareNotAttacked) {
                     ChessBoard.legalMoves.add(
                         encodeMove({
                             source: ChessBoard.side === PieceColor.WHITE ? Squares.e1 : Squares.e8,

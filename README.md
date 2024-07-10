@@ -4,7 +4,7 @@
 
 - Parse FEN
 
-## Tech Stack 
+## Tech Stack
 
 ### Bundler
 

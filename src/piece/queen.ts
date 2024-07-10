@@ -1,6 +1,6 @@
 import { PieceColor } from "../PieceColor";
 import { ChessBoard, Squares } from "../chessboard";
-import { encodeMove } from "../move/move";
+import { encodeMove } from "../move/move-invoker";
 import { BLACK_PIECES, PieceBaseClass, PieceType, WHITE_PIECES } from "./piece";
 
 

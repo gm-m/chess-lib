@@ -38,8 +38,6 @@ export class PieceBaseClass implements Piece {
     color: PieceColor;
     coordinates: Squares;
 
-    // abstract getLegalMoves(): MoveList;
-
     // Piece move offsets
     static KNIGHT_OFFSETS = [33, 31, 18, 14, -33, -31, -18, -14] as const;
     static BISHOP_OFFSETS = [15, 17, -15, -17] as const;

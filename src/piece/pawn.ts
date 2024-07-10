@@ -1,6 +1,7 @@
 import { ChessBoard, Squares } from "../chessboard";
 import { PieceColor } from "../enum/PieceColor";
-import { MoveList, encodeMove } from "../move/move";
+import { encodeMove } from "../move/move-invoker";
+import { MoveList } from "../move/move-list";
 import { PIECES, PROMOTION_PIECES, PieceBaseClass, PieceType } from "./piece";
 
 
@@ -102,7 +103,9 @@ export default class Pawn extends PieceBaseClass {
 
             if (!(toSquare & 0x88)) {
                 // Capture pawn promotion
-                if (coordinates >= ChessBoard.seventhRankSquares.get(color)![0] && coordinates <= ChessBoard.seventhRankSquares.get(color)![1] && PIECES.get(color)!.includes(ChessBoard.board[toSquare])) {
+                if (coordinates >= ChessBoard.seventhRankSquares.get(color)![0] &&
+                    coordinates <= ChessBoard.seventhRankSquares.get(color)![1] &&
+                    PIECES.get(color)!.includes(ChessBoard.board[toSquare])) {
                     // Add all possible promotion moves
                     [PROMOTION_PIECES[color]].forEach(piece => {
                         ChessBoard.legalMoves.add(
