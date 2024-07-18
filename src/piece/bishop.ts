@@ -11,7 +11,7 @@ export default class Bishop extends PieceBaseClass {
         // this.getLegalMoves();
     }
 
-    static getLegalMoves(coordinates: Squares, color: PieceColor): MoveList {
+    static getLegalMoves(coordinates: Squares): MoveList {
         const isCurrentPlayerBishopOrQueen: boolean = (() => {
             if (ChessBoard.side === PieceColor.WHITE) {
                 return ChessBoard.board[coordinates] === PieceType.WHITE_BISHOP || ChessBoard.board[coordinates] === PieceType.WHITE_QUEEN;

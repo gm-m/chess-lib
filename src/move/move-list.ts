@@ -65,12 +65,14 @@ export class MoveList {
     public add(encodeMove: number) {
         console.log({ encodeMove });
 
-        console.log("getMoveSource", this.getMoveSource(encodeMove));
-        console.log("movePiece", this.getMovePiece(encodeMove));
-        console.log("getMoveCapture", this.getMoveCapture(encodeMove));
-        console.log("getDoubleMovePawn", this.getDoubleMovePawn(encodeMove));
-        console.log("getMoveEnpassant", this.getMoveEnpassant(encodeMove));
-        console.log("getMoveCastling", this.getMoveCastling(encodeMove));
+        if (0) {
+            console.log("getMoveSource", this.getMoveSource(encodeMove));
+            console.log("movePiece", this.getMovePiece(encodeMove));
+            console.log("getMoveCapture", this.getMoveCapture(encodeMove));
+            console.log("getDoubleMovePawn", this.getDoubleMovePawn(encodeMove));
+            console.log("getMoveEnpassant", this.getMoveEnpassant(encodeMove));
+            console.log("getMoveCastling", this.getMoveCastling(encodeMove));
+        }
 
         const [key, targetSquare]: [Squares, Squares] = [this.getMoveSource(encodeMove), this.getMoveTarget(encodeMove)];
         this.legalMovesMap.set(key, [...(this.legalMovesMap.get(key) || []), targetSquare]);

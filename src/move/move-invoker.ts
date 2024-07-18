@@ -1,8 +1,8 @@
-import { ChessBoard, SQUARE_TO_COORDS, Squares, } from "../chessboard";
+import { ChessBoard, Squares } from "../chessboard";
 import { PieceColor } from "../enum/PieceColor";
 import King from "../piece/king";
 import { BLACK_PROMOTION_PIECES, PieceBaseClass, PieceType, WHITE_PROMOTION_PIECES } from "../piece/piece";
-import { charToPieceType, customLog, decodeEnum, getPieceColor } from "../utility";
+import { charToPieceType, decodeEnum, getPieceColor, prettyLog } from "../utility";
 
 
 export interface EncodeMove {
@@ -30,7 +30,6 @@ export function encodeMove(rawMove: EncodeMove): number {
 
 export interface Move {
     square: Squares;
-    pieceRappresentation?: string;
 }
 
 interface MoveHistory {
@@ -187,7 +186,7 @@ export class MoveInvoker {
 
         const oppositeSideColor = this.chessboard.flipSide();
         const kingOppositeSideCoords = PieceBaseClass.KING_SQUARES[oppositeSideColor];
-        King.getLegalMoves(kingOppositeSideCoords, oppositeSideColor);
+        King.getLegalMoves(kingOppositeSideCoords);
 
         let isKingBlocked = true;
         const kingLegalMoves = ChessBoard.legalMoves.legalMovesMap.get(kingOppositeSideCoords);
@@ -228,9 +227,9 @@ export class MoveInvoker {
 
         if (!isMovesAvailable && isKingBlocked) {
             alert("Stalemate 100%");
-            customLog("Stalemate 100%");
+            prettyLog("Stalemate 100%");
         } else {
-            customLog("No Stalemate cowboy");
+            prettyLog("No Stalemate cowboy");
         }
         console.groupEnd();
 
@@ -252,13 +251,8 @@ export class MoveInvoker {
             const lastMove = this.movesHistory[this.movesHistory.length - (this.undoMoveCounter + 1)];
             if (!lastMove) return;
 
-            const { fromSquareIdx: fromSquare, fromSquarePieceRappresentation, toSquareIdx: toSquare, toSquarePieceRappresentation } = lastMove;
-            this.executeMove(
-                { square: fromSquare, pieceRappresentation: fromSquarePieceRappresentation },
-                // { square: toSquare, pieceRappresentation: toSquarePieceRappresentation },
-                { square: toSquare, pieceRappresentation: undefined },
-                false
-            );
+            const { fromSquareIdx: fromSquare, toSquareIdx: toSquare } = lastMove;
+            this.executeMove({ square: fromSquare }, { square: toSquare }, false);
         }
     }
 
@@ -280,10 +274,10 @@ export class MoveInvoker {
             }
 
             this.undoMoveCounter++;
-            const { fromSquareIdx: fromSquare, fromSquarePieceRappresentation, toSquareIdx: toSquare, toSquarePieceRappresentation } = lastMove;
+            const { fromSquareIdx: fromSquare, toSquareIdx: toSquare } = lastMove;
             this.executeMove(
-                { square: toSquare, pieceRappresentation: toSquarePieceRappresentation },
-                { square: fromSquare, pieceRappresentation: fromSquarePieceRappresentation },
+                { square: toSquare },
+                { square: fromSquare, },
                 false
             );
 

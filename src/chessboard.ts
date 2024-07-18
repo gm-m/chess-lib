@@ -9,7 +9,7 @@ import { PieceBaseClass, PieceType } from "./piece/piece";
 import Rook from "./piece/rook";
 import {
     charToPieceType,
-    customLog as prettyLog,
+    prettyLog,
     getPieceColor,
     isAlphabetCharacter,
     isDigitCharacter
@@ -561,25 +561,25 @@ export class ChessBoard {
                 break;
             case PieceType.WHITE_ROOK:
             case PieceType.BLACK_ROOK:
-                Rook.getLegalMoves(fromSquare, pieceColor);
+                Rook.getLegalMoves(fromSquare);
                 break;
             case PieceType.WHITE_BISHOP:
             case PieceType.BLACK_BISHOP:
-                Bishop.getLegalMoves(fromSquare, pieceColor);
+                Bishop.getLegalMoves(fromSquare);
                 break;
             case PieceType.WHITE_KNIGHT:
             case PieceType.BLACK_KNIGHT:
-                Knight.getLegalMoves(fromSquare, pieceColor);
+                Knight.getLegalMoves(fromSquare);
                 break;
             case PieceType.WHITE_QUEEN:
             case PieceType.BLACK_QUEEN:
-                Rook.getLegalMoves(fromSquare, pieceColor);
-                Bishop.getLegalMoves(fromSquare, pieceColor);
+                Rook.getLegalMoves(fromSquare);
+                Bishop.getLegalMoves(fromSquare);
                 // Queen.getLegalMoves(square, PieceColor.WHITE);
                 break;
             case PieceType.WHITE_KING:
             case PieceType.BLACK_KING:
-                King.getLegalMoves(fromSquare, pieceColor);
+                King.getLegalMoves(fromSquare);
                 break;
             default:
                 break;

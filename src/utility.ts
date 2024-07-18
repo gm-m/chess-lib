@@ -1,6 +1,6 @@
 import { BLACK_PIECES, PieceType, WHITE_PIECES } from "./piece/piece";
-import { ChessBoard, Squares } from "./chessboard.ts";
-import { PieceColor } from "./enum/PieceColor.ts";
+import { ChessBoard, Squares } from "./chessboard";
+import { PieceColor } from "./enum/PieceColor";
 
 // isAlphabetCharacter = (ch) => ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z';
 export const isAlphabetCharacter = (ch: string) => /^[A-Z]$/i.test(ch);
@@ -42,7 +42,7 @@ export function charToPieceType(char: string): PieceType {
 
 
 export function decodeEnum(el: any) {
-    const match = Object.entries(Squares).find(([key, value]) => value === el);
+    const match = Object.entries(Squares).find(([_, value]) => value === el);
     return match ? match[0] : undefined;
 }
 
@@ -56,7 +56,7 @@ export function getPieceColor(square: Squares): PieceColor | undefined {
     }
 }
 
-export function customLog(message: string = "customLog") {
+export function prettyLog(message: string = "customLog") {
     const baseStyles = [
         "color: #fff",
         "background-color: #444",

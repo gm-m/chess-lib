@@ -1,5 +1,5 @@
-import { PieceColor } from "../PieceColor";
 import { ChessBoard, Squares } from "../chessboard";
+import { PieceColor } from "../enum/PieceColor";
 import { encodeMove } from "../move/move-invoker";
 import { BLACK_PIECES, PieceBaseClass, PieceType, WHITE_PIECES } from "./piece";
 
@@ -10,7 +10,7 @@ export default class Queen extends PieceBaseClass {
         // this.getLegalMoves();
     }
 
-    static getLegalMoves(coordinates: Squares, color: PieceColor) {
+    static getLegalMoves(coordinates: Squares) {
         const isCurrentPlayerKnight: boolean = (() => {
             if (ChessBoard.side === PieceColor.WHITE) {
                 return ChessBoard.board[coordinates] === PieceType.WHITE_KING;

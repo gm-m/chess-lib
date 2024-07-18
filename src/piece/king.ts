@@ -11,7 +11,7 @@ export default class King extends PieceBaseClass {
         // this.getLegalMoves();
     }
 
-    static getLegalMoves(coordinates: Squares, color: PieceColor): MoveList {
+    static getLegalMoves(coordinates: Squares): MoveList {
         const isCurrentPlayerKing: boolean = (() => {
             if (ChessBoard.side === PieceColor.WHITE) {
                 return ChessBoard.board[coordinates] === PieceType.WHITE_KING;
