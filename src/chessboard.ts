@@ -284,6 +284,7 @@ export class ChessBoard {
 
         ChessBoard.legalMoves.printMoves();
         this.printBoard();
+        this.prettyPrint(ChessBoard.board);
     }
 
     appendToPGN(pgn: string) {
@@ -601,9 +602,33 @@ export class ChessBoard {
     }
 
     public printBoard() {
-        console.log("Board Len:", ChessBoard.board.length);
+        console.log("Board Len!:", ChessBoard.board.length);
         console.log("Board:", ChessBoard.board);
     }
+
+    public prettyPrint(board: string[]): void {
+        const pieceRepresentation: { [key: string]: string; } = {
+            'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚', 'p': '♟',
+            'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔', 'P': '♙',
+            'e': '　', 'o': ' '
+        };
+
+        const boardSize = 8;
+        for (let row = 0; row < boardSize; row++) {
+            let rowString = `${8 - row} |`;
+            for (let col = 0; col < boardSize; col++) {
+                const index = row * 16 + col;
+                const piece = board[index];
+
+                rowString += ` ${pieceRepresentation[piece]} |`;
+            }
+
+            console.log(rowString);
+        }
+
+        console.log('    a    b    c    d    e    f    g    h');
+    }
+
 
     public setPiece(fromSquare: Squares, toSquare: Squares): boolean {
         if (ChessBoard.legalMoves.legalMovesMap.has(fromSquare)) {
