@@ -280,7 +280,7 @@ export class ChessBoard {
 
         if (!fen) fen = this.defaultFen;
 
-        ChessBoard.parseFen(this.defaultFen);
+        ChessBoard.parseFen(fen);
 
         ChessBoard.legalMoves.printMoves();
         this.printBoard();
@@ -433,6 +433,10 @@ export class ChessBoard {
         }
 
         return false;
+    }
+
+    public isInCheck(){
+        return ChessBoard.isSquareAttacked(PieceBaseClass.KING_SQUARES[ChessBoard.side], this.flipSide());
     }
 
     static parseFen(fen: string) {
