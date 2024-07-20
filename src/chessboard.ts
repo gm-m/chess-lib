@@ -601,6 +601,10 @@ export class ChessBoard {
         prettyLog("No King is under attack");
     }
 
+    public getSquare(square: Squares) {
+        return { piece: ChessBoard.board[square], color: getPieceColor(square) };
+    }
+
     public printBoard() {
         console.log("Board Len!:", ChessBoard.board.length);
         console.log("Board:", ChessBoard.board);
