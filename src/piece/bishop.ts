@@ -1,23 +1,21 @@
 import { ChessBoard, Squares } from "../chessboard";
 import { PieceColor } from "../enum/PieceColor";
 import { encodeMove } from "../move/move-invoker";
-import { MoveList } from "../move/move-list";
 import { BLACK_PIECES, PieceBaseClass, PieceType, WHITE_PIECES } from "./piece";
 
 
 export default class Bishop extends PieceBaseClass {
     constructor(coordinates: Squares, color: PieceColor) {
         super(coordinates, color);
-        // this.getLegalMoves();
     }
 
-    static getLegalMoves(coordinates: Squares): MoveList {
+    static getLegalMoves(coordinates: Squares, color: PieceColor): Squares[] {
         const isCurrentPlayerBishopOrQueen: boolean = (() => {
-            if (ChessBoard.side === PieceColor.WHITE) {
-                return ChessBoard.board[coordinates] === PieceType.WHITE_BISHOP || ChessBoard.board[coordinates] === PieceType.WHITE_QUEEN;
-            } else {
-                return ChessBoard.board[coordinates] === PieceType.BLACK_BISHOP || ChessBoard.board[coordinates] === PieceType.BLACK_QUEEN;
-            }
+            const pieceAtCoordinate = ChessBoard.board[coordinates];
+            return pieceAtCoordinate === PieceType.WHITE_BISHOP ||
+                pieceAtCoordinate === PieceType.WHITE_QUEEN ||
+                pieceAtCoordinate === PieceType.BLACK_BISHOP ||
+                pieceAtCoordinate === PieceType.BLACK_QUEEN;
         })();
 
         if (isCurrentPlayerBishopOrQueen) {
@@ -29,15 +27,15 @@ export default class Bishop extends PieceBaseClass {
                     let targetPiece: PieceType = ChessBoard.board[targetSquare];
 
                     // If hits own piece
-                    const hitsOwnWhitePiece: boolean = ChessBoard.side === PieceColor.WHITE && WHITE_PIECES.includes(targetPiece);
-                    const hitsOwnBlackPiece: boolean = ChessBoard.side === PieceColor.BLACK && BLACK_PIECES.includes(targetPiece);
+                    const hitsOwnWhitePiece: boolean = color === PieceColor.WHITE && WHITE_PIECES.includes(targetPiece);
+                    const hitsOwnBlackPiece: boolean = color === PieceColor.BLACK && BLACK_PIECES.includes(targetPiece);
                     if (hitsOwnWhitePiece || hitsOwnBlackPiece) {
                         break;
                     }
 
                     // If hits opponent's piece
-                    const hitsOpponentWhitePiece: boolean = ChessBoard.side === PieceColor.WHITE && BLACK_PIECES.includes(targetPiece);
-                    const hitsOpponentBlackPiece: boolean = ChessBoard.side === PieceColor.BLACK && WHITE_PIECES.includes(targetPiece);
+                    const hitsOpponentWhitePiece: boolean = color === PieceColor.WHITE && BLACK_PIECES.includes(targetPiece);
+                    const hitsOpponentBlackPiece: boolean = color === PieceColor.BLACK && WHITE_PIECES.includes(targetPiece);
                     if (hitsOpponentWhitePiece || hitsOpponentBlackPiece) {
                         ChessBoard.legalMoves.add(
                             encodeMove({
@@ -77,6 +75,6 @@ export default class Bishop extends PieceBaseClass {
             }
         }
 
-        return ChessBoard.legalMoves;
+        return ChessBoard.legalMoves.legalMovesMap.get(coordinates)!;
     }
 }

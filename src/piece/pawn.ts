@@ -1,7 +1,6 @@
 import { ChessBoard, Squares } from "../chessboard";
 import { PieceColor } from "../enum/PieceColor";
 import { encodeMove } from "../move/move-invoker";
-import { MoveList } from "../move/move-list";
 import { PIECES, PROMOTION_PIECES, PieceBaseClass, PieceType } from "./piece";
 
 
@@ -10,13 +9,12 @@ export default class Pawn extends PieceBaseClass {
 
     constructor(coordinates: Squares, color: PieceColor) {
         super(coordinates, color);
-        // this.getLegalMoves();
     }
 
-    static getLegalMoves(coordinates: Squares, color: PieceColor): MoveList {
+    static getLegalMoves(coordinates: Squares, color: PieceColor): Squares[] {
         const isCurrentPlayerPawn = ChessBoard.board[coordinates] === (ChessBoard.side === PieceColor.WHITE ? PieceType.WHITE_PAWN : PieceType.BLACK_PAWN);
         if (!isCurrentPlayerPawn) {
-            return ChessBoard.legalMoves;
+            return ChessBoard.legalMoves.legalMovesMap.get(coordinates)!;
         }
 
         ChessBoard.legalMoves.resetExecuted();
@@ -153,7 +151,7 @@ export default class Pawn extends PieceBaseClass {
             }
         }
 
-        return ChessBoard.legalMoves;
+        return ChessBoard.legalMoves.legalMovesMap.get(coordinates)!;
     }
 
 }

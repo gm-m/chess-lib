@@ -1,23 +1,18 @@
 import { ChessBoard, Squares } from "../chessboard";
 import { PieceColor } from "../enum/PieceColor";
 import { encodeMove } from "../move/move-invoker";
-import { MoveList } from "../move/move-list";
 import { BLACK_PIECES, PieceBaseClass, PieceType, WHITE_PIECES } from "./piece";
 
 
 export default class Knight extends PieceBaseClass {
     constructor(coordinates: Squares, color: PieceColor) {
         super(coordinates, color);
-        // this.getLegalMoves();
     }
 
-    static getLegalMoves(coordinates: Squares): MoveList {
+    static getLegalMoves(coordinates: Squares, color: PieceColor): Squares[] {
         const isCurrentPlayerKnight: boolean = (() => {
-            if (ChessBoard.side === PieceColor.WHITE) {
-                return ChessBoard.board[coordinates] === PieceType.WHITE_KNIGHT;
-            } else {
-                return ChessBoard.board[coordinates] === PieceType.BLACK_KNIGHT;
-            }
+            const pieceAtCoordinate = ChessBoard.board[coordinates];
+            return pieceAtCoordinate === PieceType.WHITE_KNIGHT || pieceAtCoordinate === PieceType.BLACK_KNIGHT;
         })();
 
         if (isCurrentPlayerKnight) {
@@ -28,8 +23,8 @@ export default class Knight extends PieceBaseClass {
                 if (!(targetSquare & 0x88)) {
                     let targetPiece: PieceType = ChessBoard.board[targetSquare];
 
-                    const hitsOpponentWhitePiece: boolean = ChessBoard.side === PieceColor.WHITE && BLACK_PIECES.includes(targetPiece);
-                    const hitsOpponentBlackPiece: boolean = ChessBoard.side === PieceColor.BLACK && WHITE_PIECES.includes(targetPiece);
+                    const hitsOpponentWhitePiece: boolean = color === PieceColor.WHITE && BLACK_PIECES.includes(targetPiece);
+                    const hitsOpponentBlackPiece: boolean = color === PieceColor.BLACK && WHITE_PIECES.includes(targetPiece);
                     if (hitsOpponentWhitePiece || hitsOpponentBlackPiece || targetPiece === PieceType.EMPTY) {
                         if (targetPiece === PieceType.EMPTY) {
                             ChessBoard.legalMoves.add(
@@ -61,6 +56,6 @@ export default class Knight extends PieceBaseClass {
             }
         }
 
-        return ChessBoard.legalMoves;
+        return ChessBoard.legalMoves.legalMovesMap.get(coordinates)!;
     }
 }

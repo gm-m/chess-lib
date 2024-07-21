@@ -55,6 +55,7 @@ export class PieceBaseClass implements Piece {
     // TODO: Replace hard coded value 116 with Square.e1 and 4 with Squares.e8 enum
     static KING_SQUARES: [Squares, Squares] = [116, 4];
 
+    // dec 15 => bin 1111 => both kings can castle to both sides
     static CASTLE = 15 as const;
 
     constructor(pieceCoordinates: Squares, pieceColor: PieceColor) {

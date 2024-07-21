@@ -1,8 +1,7 @@
 import { ChessBoard, Squares } from "../chessboard";
 import { PieceColor } from "../enum/PieceColor";
-import King from "../piece/king";
 import { BLACK_PROMOTION_PIECES, PieceBaseClass, PieceType, WHITE_PROMOTION_PIECES } from "../piece/piece";
-import { charToPieceType, decodeEnum, getPieceColor, prettyLog } from "../utility";
+import { charToPieceType, decodeEnum } from "../utility";
 
 
 export interface EncodeMove {
@@ -16,8 +15,8 @@ export interface EncodeMove {
 }
 
 // TODO:
-// Maybe it's better to avoid any type of converion and instead change the Move interface so that boolean became a number;
-// Check if macros exists in Javascript. If so convert thi function into a Macro in order to get a performance boost
+// Maybe it's better to avoid any type of conversion and instead change the Move interface so that boolean became a number;
+// Check if macros exists in Javascript. If so convert this function into a Macro in order to get a performance boost
 export function encodeMove(rawMove: EncodeMove): number {
     return (rawMove.source)
         | (rawMove.targetSquare << 7)
@@ -156,21 +155,13 @@ export class MoveInvoker {
         ChessBoard.legalMoves.resetLegalMoves();
 
         // Stalemate && Flip side
-        this.detectStalemate();
+        this.chessboard.isStaleMate();
 
         // All legal moves per Side
         // this.chessboard.getAllLegalMoves();
 
         // Is King in Check
-
-        // const isKingAttacked = ChessBoard.isSquareAttacked(PieceBaseClass.KING_SQUARES[ChessBoard.side], previousSide);
-        // if (ChessBoard.side === PieceColor.WHITE) {
-        //     this.chessboard.isWhiteKingAttacked = isKingAttacked;
-        //     customLog(`is White King Attacked: ${ isKingAttacked; } `);
-        // } else {
-        //     this.chessboard.isBlackKingAttacked = isKingAttacked;
-        //     customLog(`is Black King Attacked: ${ isKingAttacked; } `);
-        // }
+        // this.chessboard.isInCheck();
     }
 
     private updateKingSquares(fromSquarePieceType: PieceType, toMove: Move) {
@@ -181,60 +172,8 @@ export class MoveInvoker {
         }
     }
 
-    private detectStalemate(): boolean {
-        console.groupCollapsed("Stalemate");
-
-        const oppositeSideColor = this.chessboard.flipSide();
-        const kingOppositeSideCoords = PieceBaseClass.KING_SQUARES[oppositeSideColor];
-        King.getLegalMoves(kingOppositeSideCoords);
-
-        let isKingBlocked = true;
-        const kingLegalMoves = ChessBoard.legalMoves.legalMovesMap.get(kingOppositeSideCoords);
-        if (kingLegalMoves) {
-            console.log("King Legal Moves: ", kingLegalMoves);
-            isKingBlocked = kingLegalMoves.every((legalMove: Squares) => {
-                return ChessBoard.isSquareAttacked(legalMove, ChessBoard.side);
-            });
-            ChessBoard.legalMoves.resetLegalMoves();
-        }
-        console.log("isKingBlocked: ", isKingBlocked);
-
-
-        // Flip side
-        ChessBoard.side = this.chessboard.flipSide();
-        const playerToMoveDom: HTMLSpanElement | null = document.querySelector('.dot');
-        if (playerToMoveDom) {
-            ChessBoard.side === PieceColor.WHITE ? playerToMoveDom.style.backgroundColor = 'white' : playerToMoveDom.style.backgroundColor = 'black';
-        }
-
-        let isMovesAvailable = false;
-        for (let square = 0; square < ChessBoard.board.length; square++) {
-            const isKing = square === kingOppositeSideCoords;
-            if (!(square & 0x88) && ChessBoard.board[square] !== PieceType.EMPTY && !isKing) {
-                const pieceColor = getPieceColor(square);
-
-                if (pieceColor !== undefined && pieceColor === oppositeSideColor) {
-                    this.chessboard.getLegalMovesFromSquare(square);
-                    const legalMoves = ChessBoard.legalMoves.legalMovesMap.get(square);
-                    if (legalMoves && legalMoves.length > 0) {
-                        isMovesAvailable = true;
-                        break;
-                    }
-                }
-            }
-        }
-        console.log("Other pieces blocked: ", !isMovesAvailable);
-
-        if (!isMovesAvailable && isKingBlocked) {
-            alert("Stalemate 100%");
-            prettyLog("Stalemate 100%");
-        } else {
-            prettyLog("No Stalemate cowboy");
-        }
-        console.groupEnd();
-
-        return false;
-    }
+    // private getLegalMove(piece: PieceType, coordinates: Squares){
+    // }
 
     redoMove(quantity?: number) {
         console.group("Redo Move Fn");

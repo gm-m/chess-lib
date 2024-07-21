@@ -276,15 +276,13 @@ export class ChessBoard {
         }
 
         ChessBoard.instance = this;
-        this.getAllLegalMoves();
 
         if (!fen) fen = this.defaultFen;
 
-        ChessBoard.parseFen(fen);
+        this.parseFen(fen);
+        // this.getAllLegalMoves();
 
         ChessBoard.legalMoves.printMoves();
-        this.printBoard();
-        this.prettyPrint(ChessBoard.board);
     }
 
     appendToPGN(pgn: string) {
@@ -292,7 +290,7 @@ export class ChessBoard {
         console.log("Updated PGN: ", this.PGN);
     }
 
-    static resetBoard() {
+    resetBoard() {
         for (let rank = 0; rank < 8; rank++) {
             for (let file = 0; file < 16; file++) {
                 const square = (rank * 16) + file;
@@ -435,12 +433,16 @@ export class ChessBoard {
         return false;
     }
 
-    public isInCheck(){
+    public isInCheck(): boolean {
         return ChessBoard.isSquareAttacked(PieceBaseClass.KING_SQUARES[ChessBoard.side], this.flipSide());
     }
 
-    static parseFen(fen: string) {
-        ChessBoard.resetBoard();
+    public isStaleMate(): boolean {
+        return !this.isInCheck() && this.getAllLegalMoves(ChessBoard.side).size === 0;
+    }
+
+    parseFen(fen: string) {
+        this.resetBoard();
 
         let fenIterator = fen[Symbol.iterator]();
         let nextFenChar: string = fenIterator.next().value;
@@ -488,7 +490,7 @@ export class ChessBoard {
             }
         }
 
-        console.groupCollapsed("Fen Analisys");
+        console.group("Fen Analisys");
         nextFenChar = fenIterator.next().value;
         nextFenChar === 'w' ? (ChessBoard.side = PieceColor.WHITE, console.log("Player: White")) : (ChessBoard.side = PieceColor.BLACK, console.log("Player: Black"));
 
@@ -534,25 +536,26 @@ export class ChessBoard {
         ChessBoard.legalMoves.legalMovesMap.clear();
     }
 
-    public getAllLegalMoves() {
+    public getAllLegalMoves(side?: PieceColor): Map<Squares, Squares[]> {
         for (let rank = 0; rank < 8; rank++) {
-            let file: number = 0;
-
-            while (file < 16) {
-                let square: number = (rank * 16) + file;
+            for (let file = 0; file < 16; file++) {
+                const square: number = (rank * 16) + file;
 
                 // If square is on Board
                 if (!(square & 0x88)) {
                     if (ChessBoard.board[square] !== PieceType.EMPTY) {
-                        this.getLegalMovesFromSquare(square);
+                        if (side === undefined || getPieceColor(square) === side) {
+                            this.getLegalMovesFromSquare(square);
+                        }
                     }
                 }
-
-                file++;
             }
         }
 
-        console.log("Legal moves: ", ChessBoard.legalMoves);
+
+        console.log("Legal moves: ", ChessBoard.legalMoves.legalMovesMap);
+
+        return ChessBoard.legalMoves.legalMovesMap;
     }
 
     public getLegalMovesFromSquare(fromSquare: Squares) {
@@ -566,25 +569,25 @@ export class ChessBoard {
                 break;
             case PieceType.WHITE_ROOK:
             case PieceType.BLACK_ROOK:
-                Rook.getLegalMoves(fromSquare);
+                Rook.getLegalMoves(fromSquare, pieceColor);
                 break;
             case PieceType.WHITE_BISHOP:
             case PieceType.BLACK_BISHOP:
-                Bishop.getLegalMoves(fromSquare);
+                Bishop.getLegalMoves(fromSquare, pieceColor);
                 break;
             case PieceType.WHITE_KNIGHT:
             case PieceType.BLACK_KNIGHT:
-                Knight.getLegalMoves(fromSquare);
+                Knight.getLegalMoves(fromSquare, pieceColor);
                 break;
             case PieceType.WHITE_QUEEN:
             case PieceType.BLACK_QUEEN:
-                Rook.getLegalMoves(fromSquare);
-                Bishop.getLegalMoves(fromSquare);
+                Rook.getLegalMoves(fromSquare, pieceColor);
+                Bishop.getLegalMoves(fromSquare, pieceColor);
                 // Queen.getLegalMoves(square, PieceColor.WHITE);
                 break;
             case PieceType.WHITE_KING:
             case PieceType.BLACK_KING:
-                King.getLegalMoves(fromSquare);
+                King.getLegalMoves(fromSquare, pieceColor);
                 break;
             default:
                 break;
@@ -609,12 +612,7 @@ export class ChessBoard {
         return { piece: ChessBoard.board[square], color: getPieceColor(square) };
     }
 
-    public printBoard() {
-        console.log("Board Len!:", ChessBoard.board.length);
-        console.log("Board:", ChessBoard.board);
-    }
-
-    public prettyPrint(board: string[]): void {
+    public prettyPrint(): void {
         const pieceRepresentation: { [key: string]: string; } = {
             'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚', 'p': '♟',
             'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔', 'P': '♙',
@@ -626,7 +624,7 @@ export class ChessBoard {
             let rowString = `${8 - row} |`;
             for (let col = 0; col < boardSize; col++) {
                 const index = row * 16 + col;
-                const piece = board[index];
+                const piece = ChessBoard.board[index];
 
                 rowString += ` ${pieceRepresentation[piece]} |`;
             }

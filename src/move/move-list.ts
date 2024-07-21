@@ -63,9 +63,9 @@ export class MoveList {
     }
 
     public add(encodeMove: number) {
-        console.log({ encodeMove });
-
         if (0) {
+            console.log({ encodeMove });
+
             console.log("getMoveSource", this.getMoveSource(encodeMove));
             console.log("movePiece", this.getMovePiece(encodeMove));
             console.log("getMoveCapture", this.getMoveCapture(encodeMove));
