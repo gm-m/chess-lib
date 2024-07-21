@@ -1,32 +1,19 @@
-# Chess Final
+# ChessLib
 
-## Features
+## API
 
-- Parse FEN
+### .prettyPrint()
 
-## Tech Stack
+Print an ASCII diagram of the current position.
 
-### Bundler
+### .isSquareAttacked(square, color)
 
-Webpack
+Returns a boolean indicating whether a specific square is under attack by any piece belonging to a particular colour.
 
-```
-npm run build
-```
+### .isInCheck()
 
-### Test
+Returns a boolean indicating whether if the side to move is in check.
 
-Jest
+### .isStaleMate()
 
-```
-npm run test
-```
-
-### Linter
-
-Eslint
-
-
-```
-npm run lint
-```
+Returns a boolean indicating whether if the side to move has been stalemated.
