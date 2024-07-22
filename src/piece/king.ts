@@ -29,7 +29,9 @@ export default class King extends PieceBaseClass {
                     // If hits opponent's piece
                     const hitsOpponentWhitePiece: boolean = color === PieceColor.WHITE && BLACK_PIECES.includes(targetPiece);
                     const hitsOpponentBlackPiece: boolean = color === PieceColor.BLACK && WHITE_PIECES.includes(targetPiece);
-                    if (hitsOpponentWhitePiece || hitsOpponentBlackPiece || targetPiece === PieceType.EMPTY) {
+                    const isTargetSquareAttacked = ChessBoard.isSquareAttacked(targetSquare, ChessBoard.getOppositeSideColor());
+
+                    if ((hitsOpponentWhitePiece || hitsOpponentBlackPiece || targetPiece === PieceType.EMPTY) && !isTargetSquareAttacked) {
                         ChessBoard.legalMoves.add(
                             encodeMove({
                                 source: coordinates,
