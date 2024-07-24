@@ -12,7 +12,8 @@ import {
     prettyLog,
     getPieceColor,
     isAlphabetCharacter,
-    isDigitCharacter
+    isDigitCharacter,
+    getSquareColor
 } from "./utility";
 
 
@@ -253,6 +254,9 @@ export class ChessBoard {
     static legalMoves = new MoveList();
     static side: PieceColor = PieceColor.WHITE;
 
+
+    totalPieces = 0;
+
     // TODO : Move to a better place
     isWhiteKingAttacked: boolean = false;
     isBlackKingAttacked: boolean = false;
@@ -302,7 +306,7 @@ export class ChessBoard {
         }
     }
 
-    public flipSide(): PieceColor {
+    static getOppositeSideColor(): PieceColor {
         return ChessBoard.side === PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
     }
 
@@ -433,12 +437,71 @@ export class ChessBoard {
         return false;
     }
 
+    private iterateBoard(callback: (square: Squares, piece: PieceType) => void) {
+        for (let rank = 0; rank < 8; rank++) {
+            for (let file = 0; file < 16; file++) {
+                const square: number = (rank * 16) + file;
+
+                // If square is on Board
+                if (!(square & 0x88)) {
+                    const piece = ChessBoard.board[square];
+                    if (piece !== PieceType.EMPTY) {
+                        callback(square, piece);
+                    }
+                }
+            }
+        }
+    }
+
     public isInCheck(): boolean {
-        return ChessBoard.isSquareAttacked(PieceBaseClass.KING_SQUARES[ChessBoard.side], this.flipSide());
+        return ChessBoard.isSquareAttacked(PieceBaseClass.KING_SQUARES[ChessBoard.side], ChessBoard.getOppositeSideColor());
     }
 
     public isStaleMate(): boolean {
         return !this.isInCheck() && this.getAllLegalMoves(ChessBoard.side).size === 0;
+    }
+
+    public isInsufficientMaterial(): boolean {
+        const pieceCount = new Map<PieceType, number>();
+        const bishopColors: PieceColor[] = [];
+
+        this.iterateBoard((square: Squares, piece: PieceType) => {
+            pieceCount.set(piece, ((pieceCount.get(piece) || 0) + 1));
+            if (piece === PieceType.BLACK_BISHOP || piece === PieceType.WHITE_BISHOP) {
+                bishopColors.push(getSquareColor(square)!);
+            }
+        });
+
+        // King vs King
+        if (this.totalPieces === 2) return true;
+        if (this.isKingVsKingAndMinorPiece(pieceCount)) return true;
+        if (this.isKingAndBishopVsKingAndBishop(pieceCount, bishopColors)) return true;
+
+        return false;
+    }
+
+    private isKingVsKingAndMinorPiece(pieceCount: Map<PieceType, number>): boolean {
+        if (this.totalPieces !== 3) return false;
+
+        const minorPieces = [
+            PieceType.WHITE_BISHOP,
+            PieceType.BLACK_BISHOP,
+            PieceType.WHITE_KNIGHT,
+            PieceType.BLACK_KNIGHT
+        ];
+
+        return minorPieces.some(piece => pieceCount.get(piece) === 1);
+    }
+
+    private isKingAndBishopVsKingAndBishop(pieceCount: Map<PieceType, number>, bishopColors: PieceColor[]): boolean {
+        if (this.totalPieces !== 4) return false;
+
+        const whiteBishopCount = pieceCount.get(PieceType.WHITE_BISHOP) || 0;
+        const blackBishopCount = pieceCount.get(PieceType.BLACK_BISHOP) || 0;
+
+        if (whiteBishopCount !== 1 || blackBishopCount !== 1) return false;
+
+        return bishopColors[0] === bishopColors[1];
     }
 
     parseFen(fen: string) {
@@ -464,6 +527,7 @@ export class ChessBoard {
 
                         // Set the piece on board
                         ChessBoard.board[square] = charToPieceType(nextFenChar);
+                        ++this.totalPieces;
                         nextFenChar = fenIterator.next().value;
                     }
 
@@ -525,6 +589,7 @@ export class ChessBoard {
         nextFenChar = fenIterator.next().value;
         nextFenChar != '-' ? console.log("Enpassant") : console.log("No Enpassant");
         console.log("KING_SQUARES:", PieceBaseClass.KING_SQUARES);
+        console.log("Pieces on board:", this.totalPieces);
         console.groupEnd();
     }
 

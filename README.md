@@ -1,5 +1,7 @@
 # ChessLib
 
+Made using the [0x88](https://www.chessprogramming.org/0x88) chess board representation.
+
 ## API
 
 ### .prettyPrint()
@@ -17,3 +19,7 @@ Returns a boolean indicating whether if the side to move is in check.
 ### .isStaleMate()
 
 Returns a boolean indicating whether if the side to move has been stalemated.
+
+### .isInsufficientMaterial()
+
+Returns a boolean indicating whether if there is no way to end the game in checkmate.

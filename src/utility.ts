@@ -40,7 +40,6 @@ export function charToPieceType(char: string): PieceType {
     return charToPieceMap.get(char) ?? PieceType.EMPTY;
 }
 
-
 export function decodeEnum(el: any) {
     const match = Object.entries(Squares).find(([_, value]) => value === el);
     return match ? match[0] : undefined;
@@ -54,6 +53,9 @@ export function getPieceColor(square: Squares): PieceColor | undefined {
     if (BLACK_PIECES.includes(ChessBoard.board[square])) {
         return PieceColor.BLACK;
     }
+}
+export function getSquareColor(square: Squares): PieceColor {
+    return square ? PieceColor.BLACK : PieceColor.WHITE;
 }
 
 export function prettyLog(message: string = "customLog") {
