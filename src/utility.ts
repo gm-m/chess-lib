@@ -54,9 +54,21 @@ export function getPieceColor(square: Squares): PieceColor | undefined {
         return PieceColor.BLACK;
     }
 }
+
 export function getSquareColor(square: Squares): PieceColor {
-    return square ? PieceColor.BLACK : PieceColor.WHITE;
+    return (rank(square) + file(square)) % 2 === 0 ? PieceColor.WHITE : PieceColor.BLACK;
 }
+
+// Extracts the zero-based rank of an 0x88 square.
+function rank(square: number): number {
+    return square >> 4;
+}
+
+// Extracts the zero-based file of an 0x88 square.
+function file(square: number): number {
+    return square & 0xf;
+}
+
 
 export function prettyLog(message: string = "customLog") {
     const baseStyles = [
