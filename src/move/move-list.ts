@@ -48,18 +48,17 @@ export class MoveList {
         return ((encodeMove >> 21) & 0x1);
     }
 
-    public resetLegalMoves() {
-        this.legalMovesMap.clear();
-        this.encodedMovesMap.clear();
-    }
-
-    public resetMap() {
+    public resetState() {
         this.legalMovesMap.clear();
         this.encodedMovesMap.clear();
     }
 
     public resetExecuted() {
         this.executed = [];
+    }
+
+    public hasLegalMoves(square: Squares) {
+        return this.legalMovesMap.has(square);
     }
 
     public add(encodeMove: number) {

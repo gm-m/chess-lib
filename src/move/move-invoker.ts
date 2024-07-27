@@ -1,7 +1,7 @@
 import { ChessBoard, Squares } from "../chessboard";
 import { PieceColor } from "../enum/PieceColor";
 import { BLACK_PROMOTION_PIECES, PieceBaseClass, PieceType, WHITE_PROMOTION_PIECES } from "../piece/piece";
-import { charToPieceType, decodeEnum } from "../utility";
+import { decodeEnum, getPieceColor } from "../utility";
 
 
 export interface EncodeMove {
@@ -34,8 +34,14 @@ export interface Move {
 interface MoveHistory {
     fromSquareIdx: Squares;
     toSquareIdx: Squares;
-    captureMove: boolean;
-    castlingMove: boolean;
+    isCaptureMove: boolean;
+    isCastlingMove: boolean;
+}
+
+export interface MakeMove {
+    fromSquare: Squares,
+    toSquare: Squares,
+    updateMoveHistory?: boolean;
 }
 
 export class MoveInvoker {
@@ -61,7 +67,7 @@ export class MoveInvoker {
             if (lastMovePiece === "P") {
                 lastMovePiece = '';
             }
-            const captureMove = lastMove.captureMove ? "x" : "";
+            const captureMove = lastMove.isCaptureMove ? "x" : "";
 
             const lastMoveStr = `${decodeEnum(lastMove.fromSquareIdx)}, ${decodeEnum(lastMove.toSquareIdx)}`;
             this.domHistory.push(lastMoveStr);
@@ -85,65 +91,62 @@ export class MoveInvoker {
         console.log("PGN", this.chessboard.PGN);
     }
 
-    async executeMove(fromMove: Move, toMove: Move, updateMoveHistory: boolean = true) {
-        /*
-            Check for promotion moves:
-            0 - Get the fromSquare pieceType. If it's a pawn then check if it's a promotion move
 
-            Update State:
-            1 - Move piece fromSquare to toSquare
-            2 - Remove piece from fromSquare
+    /*
+        executeMove Logic:
 
-            Switch Side:
-            3 - Update side to move
+        Check if is a possibile move
+        0 - Check if the fromSquare has the toSquare legal move
 
-            Verify Check or Checkmate:
-            4 - Verify if there is any Check or Checkmate
-        */
+        Check for enPassant moves:
+        1.1 - Get the fromSquare pieceType. If it's a pawn then check for enPassant move
 
-        // Update king squares
-        const fromSquarePieceType: PieceType = charToPieceType(ChessBoard.board[fromMove.square]);
-        this.updateKingSquares(fromSquarePieceType, toMove);
+        Check for promotion moves:
+        1.1 - Get the fromSquare pieceType. If it's a pawn then check if it's a promotion move
+        1.2 - Get the fromSquare pieceType. If it's a king then update king square
 
-        // Detect capture move
-        const isCaptureMove = ChessBoard.board[toMove.square] !== PieceType.EMPTY;
+        Update State:
+        2 - Move piece fromSquare to toSquare
+        3 - Remove piece from fromSquare
 
-        function extractXLastDigits(extractNumber: number, digitsNum: number) {
-            const numBaseString = extractNumber.toString();
-            return +numBaseString.slice(numBaseString.length - digitsNum);
+        Make the move:
+        4 - Make the move
+        5 - Update the move counter
+
+        Switch Side To Move:
+        5 - Update side to move
+
+        Verify Check, Checkmate and StaleMate:
+        7 - Verify for Check, Checkmate and StaleMate
+    */
+    executeMove(move: MakeMove) {
+        // if (!this.isLegalMove(move)) return;
+
+        // Validate that:
+        // 1. The piece that we're tring to move is of the same color of player to move.
+        // 2. The square where we want to go is not occupiede by our piece.
+        const fromSquareColor = getPieceColor(move.fromSquare);
+        const isValidTurn = ChessBoard.side === fromSquareColor && fromSquareColor !== getPieceColor(move.toSquare);
+        if (!isValidTurn) return;
+
+        const fromSquarePiece = ChessBoard.board[move.fromSquare];
+        if (fromSquarePiece === PieceType.WHITE_KING || fromSquarePiece === PieceType.BLACK_KING) {
+            this.updateKingSquares(fromSquarePiece, move.toSquare);
         }
 
-        console.log("From move square idx: ", fromMove.square);
-        const encodedMoves = ChessBoard.legalMoves.encodedMovesMap.get(fromMove.square);
-        const encodedMove = encodedMoves?.find((move: number) => extractXLastDigits(move, toMove.square.toString().length) === toMove.square);
-        const isCastlingMove = Boolean(ChessBoard.legalMoves.getMoveCastling(encodedMove!));
-        console.log(ChessBoard.legalMoves.encodedMovesMap);
-        console.log("encodedMove:", encodedMove);
-        console.log("isCastlingMove:", isCastlingMove);
+        // Detect capture move
+        const isCaptureMove = ChessBoard.board[move.toSquare] !== PieceType.EMPTY;
 
+        // TODO
+        const isCastlingMove = true;
 
-        // Promotion move
-        // const promotionPiece = await this.getPromotionPiece(fromSquarePieceType, fromMove, toMove);
-        // if (promotionPiece) {
-        //     ChessBoard.board[toMove.square] = promotionPiece;
-        //     toMove.pieceRappresentation = getHtmlPieceRappresentation(promotionPiece);
-        // } else {
-        //     ChessBoard.board[toMove.square] = ChessBoard.board[fromMove.square];
-        // }
+        // Execute Move
+        ChessBoard.board[move.toSquare] = ChessBoard.board[move.fromSquare];
+        ChessBoard.board[move.fromSquare] = PieceType.EMPTY;
+        this.chessboard.increseMoveNumber();
 
-        ChessBoard.board[toMove.square] = ChessBoard.board[fromMove.square];
-        ChessBoard.board[fromMove.square] = PieceType.EMPTY;
-
-        if (updateMoveHistory) {
-            this.movesHistory.push(
-                {
-                    fromSquareIdx: fromMove.square,
-                    toSquareIdx: toMove.square,
-                    captureMove: isCaptureMove,
-                    castlingMove: isCastlingMove,
-                }
-            );
-
+        if (move.updateMoveHistory) {
+            this.updateHistory({ fromSquareIdx: move.fromSquare, toSquareIdx: move.toSquare, isCaptureMove, isCastlingMove });
             this.updateChessNotation();
             console.log('Update History: ', this.movesHistory);
         } else {
@@ -151,29 +154,45 @@ export class MoveInvoker {
             console.log('Do not update History: ', this.movesHistory);
         }
 
-        this.chessboard.resetHighlightedSquares();
-        ChessBoard.legalMoves.resetLegalMoves();
+        ChessBoard.legalMoves.resetState();
 
-        // Stalemate && Flip side
+        // Update side
+        this.chessboard.updateSideToMove();
+
+        // Check the current state
         this.chessboard.isStaleMate();
-
-        // All legal moves per Side
-        // this.chessboard.getAllLegalMoves();
-
-        // Is King in Check
         // this.chessboard.isInCheck();
+        // this.chessboard.isInsufficientMaterial();
+        // this.chessboard.isCheckmate();
+
+        this.chessboard.prettyPrint();
     }
 
-    private updateKingSquares(fromSquarePieceType: PieceType, toMove: Move) {
+    private updateKingSquares(fromSquarePieceType: PieceType, toSquare: Squares) {
         if (fromSquarePieceType === PieceType.WHITE_KING) {
-            PieceBaseClass.KING_SQUARES[PieceColor.WHITE] = toMove.square;
+            PieceBaseClass.KING_SQUARES[PieceColor.WHITE] = toSquare;
         } else if (fromSquarePieceType === PieceType.BLACK_KING) {
-            PieceBaseClass.KING_SQUARES[PieceColor.BLACK] = toMove.square;
+            PieceBaseClass.KING_SQUARES[PieceColor.BLACK] = toSquare;
         }
     }
 
-    // private getLegalMove(piece: PieceType, coordinates: Squares){
-    // }
+    private updateHistory(move: MoveHistory) {
+        this.movesHistory.push(
+            {
+                fromSquareIdx: move.fromSquareIdx,
+                toSquareIdx: move.toSquareIdx,
+                isCaptureMove: move.isCaptureMove,
+                isCastlingMove: move.isCastlingMove,
+            }
+        );
+    }
+
+    isLegalMove(move: MakeMove) {
+        if (!ChessBoard.legalMoves.hasLegalMoves(move.fromSquare)) return false;
+
+        const legalMoves = ChessBoard.legalMoves.legalMovesMap.get(move.fromSquare)!;
+        return legalMoves.some((_move: Squares) => _move === move.toSquare);
+    }
 
     redoMove(quantity?: number) {
         console.group("Redo Move Fn");
@@ -190,8 +209,9 @@ export class MoveInvoker {
             const lastMove = this.movesHistory[this.movesHistory.length - (this.undoMoveCounter + 1)];
             if (!lastMove) return;
 
-            const { fromSquareIdx: fromSquare, toSquareIdx: toSquare } = lastMove;
-            this.executeMove({ square: fromSquare }, { square: toSquare }, false);
+            // TODO
+            // const { fromSquareIdx: fromSquare, toSquareIdx: toSquare } = lastMove;
+            // this.executeMove({ square: fromSquare }, { square: toSquare }, false);
         }
     }
 
@@ -213,20 +233,17 @@ export class MoveInvoker {
             }
 
             this.undoMoveCounter++;
-            const { fromSquareIdx: fromSquare, toSquareIdx: toSquare } = lastMove;
-            this.executeMove(
-                { square: toSquare },
-                { square: fromSquare, },
-                false
-            );
+            // TODO
+            // const { fromSquareIdx: fromSquare, toSquareIdx: toSquare } = lastMove;
+            // this.executeMove({ square: toSquare }, { square: fromSquare, }, false);
 
             const lastMoveInverted: Squares[] = [lastMove.toSquareIdx, lastMove.fromSquareIdx];
             console.group("Rewind Move Fn");
             console.log("This", this);
             console.log("Moves counter: ", this.movesHistory.length);
             console.log("Last move: ", this.movesHistory.at(-1));
-            console.log("From Square: ", fromSquare);
-            console.log("To Square: ", toSquare);
+            // console.log("From Square: ", fromSquare);
+            // console.log("To Square: ", toSquare);
             console.log("Inverted Coords: ", lastMoveInverted);
             console.log("Board", ChessBoard.board);
             console.groupEnd();

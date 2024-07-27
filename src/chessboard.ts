@@ -1,5 +1,5 @@
 import { PieceColor } from "./enum/PieceColor";
-import { MoveInvoker } from "./move/move-invoker";
+import { MakeMove, MoveInvoker } from "./move/move-invoker";
 import { MoveList } from "./move/move-list";
 import Bishop from "./piece/bishop";
 import King from "./piece/king";
@@ -254,8 +254,8 @@ export class ChessBoard {
     static legalMoves = new MoveList();
     static side: PieceColor = PieceColor.WHITE;
 
-
     totalPieces = 0;
+    moveNumber = 0;
 
     // TODO : Move to a better place
     isWhiteKingAttacked: boolean = false;
@@ -289,6 +289,10 @@ export class ChessBoard {
         ChessBoard.legalMoves.printMoves();
     }
 
+    public increseMoveNumber(){
+        this.moveNumber++;
+    }
+
     appendToPGN(pgn: string) {
         this.PGN += pgn;
         console.log("Updated PGN: ", this.PGN);
@@ -308,6 +312,10 @@ export class ChessBoard {
 
     static getOppositeSideColor(): PieceColor {
         return ChessBoard.side === PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
+    }
+
+    updateSideToMove(){
+        ChessBoard.side = ChessBoard.getOppositeSideColor();
     }
 
     // TODO: Replace hardcoded seventhRankSquares with the following
@@ -435,6 +443,10 @@ export class ChessBoard {
         }
 
         return false;
+    }
+
+    public movePiece(move: MakeMove){
+        this.moveInvoker.executeMove(move);
     }
 
     private iterateBoard(callback: (square: Squares, piece: PieceType) => void) {
@@ -677,6 +689,10 @@ export class ChessBoard {
         return { piece: ChessBoard.board[square], color: getPieceColor(square) };
     }
 
+    public getMoveNumber(): number {
+        return this.moveNumber;
+    }
+
     public prettyPrint(): void {
         const pieceRepresentation: { [key: string]: string; } = {
             'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚', 'p': '♟',
@@ -700,18 +716,6 @@ export class ChessBoard {
         console.log('    a    b    c    d    e    f    g    h');
     }
 
-
-    public setPiece(fromSquare: Squares, toSquare: Squares): boolean {
-        if (ChessBoard.legalMoves.legalMovesMap.has(fromSquare)) {
-            const legalMoves = ChessBoard.legalMoves.legalMovesMap.get(fromSquare)!;
-            if (legalMoves.some((move: Squares) => move === toSquare)) {
-                this.moveInvoker.executeMove({ square: fromSquare }, { square: toSquare });
-                return true;
-            }
-        }
-
-        return false;
-    }
 }
 
 /*

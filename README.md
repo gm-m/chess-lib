@@ -23,3 +23,7 @@ Returns a boolean indicating whether if the side to move has been stalemated.
 ### .isInsufficientMaterial()
 
 Returns a boolean indicating whether if there is no way to end the game in checkmate.
+
+### .movePiece({fromSquare, toSquare})
+
+Moves a piece from the a square to another.
