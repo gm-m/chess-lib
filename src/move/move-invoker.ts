@@ -108,16 +108,17 @@ export class MoveInvoker {
         Update State:
         2 - Move piece fromSquare to toSquare
         3 - Remove piece from fromSquare
+        4 - Update move history
 
         Make the move:
-        4 - Make the move
-        5 - Update the move counter
+        5 - Make the move
+        6 - Update the move counter
 
         Switch Side To Move:
-        5 - Update side to move
+        7 - Update side to move
 
         Verify Check, Checkmate and StaleMate:
-        7 - Verify for Check, Checkmate and StaleMate
+        8 - Verify for Check, Checkmate and StaleMate
     */
     executeMove(move: MakeMove) {
         // if (!this.isLegalMove(move)) return;
@@ -125,9 +126,14 @@ export class MoveInvoker {
         // Validate that:
         // 1. The piece that we're tring to move is of the same color of player to move.
         // 2. The square where we want to go is not occupiede by our piece.
-        const fromSquareColor = getPieceColor(move.fromSquare);
-        const isValidTurn = ChessBoard.side === fromSquareColor && fromSquareColor !== getPieceColor(move.toSquare);
-        if (!isValidTurn) return;
+
+        const isUndoMove = move.updateMoveHistory === false;
+        if (!isUndoMove) {
+            const fromSquareColor = getPieceColor(move.fromSquare);
+            const isValidTurn = ChessBoard.side === fromSquareColor && fromSquareColor !== getPieceColor(move.toSquare);
+
+            if (!isValidTurn) return;
+        }
 
         const fromSquarePiece = ChessBoard.board[move.fromSquare];
         if (fromSquarePiece === PieceType.WHITE_KING || fromSquarePiece === PieceType.BLACK_KING) {
@@ -138,20 +144,18 @@ export class MoveInvoker {
         const isCaptureMove = ChessBoard.board[move.toSquare] !== PieceType.EMPTY;
 
         // TODO
-        const isCastlingMove = true;
+        const isCastlingMove = false;
 
         // Execute Move
         ChessBoard.board[move.toSquare] = ChessBoard.board[move.fromSquare];
         ChessBoard.board[move.fromSquare] = PieceType.EMPTY;
         this.chessboard.increseMoveNumber();
 
-        if (move.updateMoveHistory) {
+        // Update History
+        if (!isUndoMove) {
             this.updateHistory({ fromSquareIdx: move.fromSquare, toSquareIdx: move.toSquare, isCaptureMove, isCastlingMove });
             this.updateChessNotation();
             console.log('Update History: ', this.movesHistory);
-        } else {
-            // When Rewinding || Redo move
-            console.log('Do not update History: ', this.movesHistory);
         }
 
         ChessBoard.legalMoves.resetState();
@@ -164,8 +168,6 @@ export class MoveInvoker {
         // this.chessboard.isInCheck();
         // this.chessboard.isInsufficientMaterial();
         // this.chessboard.isCheckmate();
-
-        this.chessboard.prettyPrint();
     }
 
     private updateKingSquares(fromSquarePieceType: PieceType, toSquare: Squares) {
@@ -215,38 +217,22 @@ export class MoveInvoker {
         }
     }
 
-    rewindMove(quantity?: number) {
-        /*
-            - Get last move
-            - Calculate the inverted coordinates. Es: If last move was e2 -> e4 now we need to execute the opposite e4 -> e2
-            - Execute move
-            - Update click event listeners
-            - Remove it from movesHistory
-        */
-
+    /*
+        - Get last move
+        - Calculate the inverted coordinates. Es: If last move was e2 -> e4 now we need to execute the opposite e4 -> e2
+        - Execute move
+        - Remove from movesHistory
+    */
+    undoMove(quantity?: number) {
         const movesToRewind: number = quantity ?? 1;
-        for (let index = 0; index < movesToRewind; index++) {
 
+        for (let index = 0; index < movesToRewind; index++) {
             const lastMove = this.movesHistory[this.movesHistory.length - (this.undoMoveCounter + 1)];
-            if (!lastMove) {
-                return;
-            }
+            if (!lastMove) return;
 
             this.undoMoveCounter++;
-            // TODO
-            // const { fromSquareIdx: fromSquare, toSquareIdx: toSquare } = lastMove;
-            // this.executeMove({ square: toSquare }, { square: fromSquare, }, false);
-
-            const lastMoveInverted: Squares[] = [lastMove.toSquareIdx, lastMove.fromSquareIdx];
-            console.group("Rewind Move Fn");
-            console.log("This", this);
-            console.log("Moves counter: ", this.movesHistory.length);
-            console.log("Last move: ", this.movesHistory.at(-1));
-            // console.log("From Square: ", fromSquare);
-            // console.log("To Square: ", toSquare);
-            console.log("Inverted Coords: ", lastMoveInverted);
-            console.log("Board", ChessBoard.board);
-            console.groupEnd();
+            const { fromSquareIdx: fromSquare, toSquareIdx: toSquare } = lastMove;
+            this.executeMove({ fromSquare: toSquare, toSquare: fromSquare, updateMoveHistory: false });
         }
     }
 

@@ -27,3 +27,7 @@ Returns a boolean indicating whether if there is no way to end the game in check
 ### .movePiece({fromSquare, toSquare})
 
 Moves a piece from the a square to another.
+
+### .undoMove(quantity?: number)
+
+Undo the last half-move, or the number of moves given in input.
