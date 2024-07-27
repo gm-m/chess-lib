@@ -1,5 +1,8 @@
 set shell := ["cmd.exe", "/c"]
 
-build:
+b:
     @npm run build
+
+t:
+    @npm run test
 
