@@ -16,6 +16,10 @@ Returns a boolean indicating whether a specific square is under attack by any pi
 
 Returns a boolean indicating whether if the side to move is in check.
 
+### .isCheckmate()
+
+Returns a boolean indicating whether if the side to move has been checkmated.
+
 ### .isStaleMate()
 
 Returns a boolean indicating whether if the side to move has been stalemated.

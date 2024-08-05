@@ -289,13 +289,12 @@ export class ChessBoard {
         ChessBoard.legalMoves.printMoves();
     }
 
-    public increseMoveNumber(){
+    public increaseMoveNumber() {
         this.moveNumber++;
     }
 
     appendToPGN(pgn: string) {
         this.PGN += pgn;
-        console.log("Updated PGN: ", this.PGN);
     }
 
     resetBoard() {
@@ -310,11 +309,11 @@ export class ChessBoard {
         }
     }
 
-    static getOppositeSideColor(): PieceColor {
-        return ChessBoard.side === PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
+    static getOppositeSideColor(side: PieceColor = ChessBoard.side): PieceColor {
+        return side === PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
     }
 
-    updateSideToMove(){
+    updateSideToMove() {
         ChessBoard.side = ChessBoard.getOppositeSideColor();
     }
 
@@ -445,8 +444,12 @@ export class ChessBoard {
         return false;
     }
 
-    public movePiece(move: MakeMove){
+    public movePiece(move: MakeMove) {
         this.moveInvoker.executeMove(move);
+    }
+
+    public undoMove(quantity?: number) {
+        this.moveInvoker.undoMove(quantity);
     }
 
     private iterateBoard(callback: (square: Squares, piece: PieceType) => void) {
@@ -465,8 +468,44 @@ export class ChessBoard {
         }
     }
 
-    public isInCheck(): boolean {
-        return ChessBoard.isSquareAttacked(PieceBaseClass.KING_SQUARES[ChessBoard.side], ChessBoard.getOppositeSideColor());
+    public isInCheck(side: PieceColor = ChessBoard.side): boolean {
+        return ChessBoard.isSquareAttacked(PieceBaseClass.KING_SQUARES[side], ChessBoard.getOppositeSideColor(side));
+    }
+
+    /*
+        - Initial Check: Check if the current player is in check.
+        - Iterating Over Legal Moves: Iterates over all legal moves for the current player.
+        - Move Simulation: For each legal move, it simulates the move using movePiece().
+        - Check for Checkmate: After making a move, checks if the player is still in check.
+        - Undo Move: If the move doesn’t resolve the check, it undoes the move using this.undoMove().
+    */
+    public isCheckmate(): boolean {
+        if (!this.isInCheck()) return false;
+
+        const currentSideToMove = ChessBoard.side;
+        const legalMovesMap = new Map(ChessBoard.legalMoves.legalMovesMap); // Shallow copy of the og map, since it will get modified durint the execution of the moves
+        for (const [square, _] of legalMovesMap) {
+            if (getPieceColor(square) !== currentSideToMove) continue;
+
+            const legalMoves = legalMovesMap.get(square);
+            if (legalMoves) {
+                for (let index = 0; index < legalMoves.length; index++) {
+                    const targetSquare = legalMoves[index];
+
+                    this.movePiece({ fromSquare: square, toSquare: targetSquare, updateMoveHistory: true });
+
+                    if (this.isInCheck(currentSideToMove) === false) {
+                        console.log("No checkmate, because of square:", targetSquare);
+                        return false;
+                    }
+
+                    this.undoMove();
+                    this.moveInvoker.undoMoveCounter = 0;
+                }
+            }
+        }
+
+        return true;
     }
 
     public isStaleMate(): boolean {
@@ -603,17 +642,17 @@ export class ChessBoard {
         console.log("KING_SQUARES:", PieceBaseClass.KING_SQUARES);
         console.log("Pieces on board:", this.totalPieces);
         console.groupEnd();
+
+        this.getAllLegalMoves();
     }
 
     public exportPGN() {
         return "TODO";
     }
 
-    public resetHighlightedSquares() {
-        ChessBoard.legalMoves.legalMovesMap.clear();
-    }
-
     public getAllLegalMoves(side?: PieceColor): Map<Squares, Squares[]> {
+        ChessBoard.legalMoves.resetState();
+
         for (let rank = 0; rank < 8; rank++) {
             for (let file = 0; file < 16; file++) {
                 const square: number = (rank * 16) + file;
@@ -628,9 +667,6 @@ export class ChessBoard {
                 }
             }
         }
-
-
-        console.log("Legal moves: ", ChessBoard.legalMoves.legalMovesMap);
 
         return ChessBoard.legalMoves.legalMovesMap;
     }

@@ -59,6 +59,7 @@ export function getSquareColor(square: Squares): PieceColor {
     return (rank(square) + file(square)) % 2 === 0 ? PieceColor.WHITE : PieceColor.BLACK;
 }
 
+// https://en.wikipedia.org/wiki/0x88#Algebraic_notation_and_conversion
 // Extracts the zero-based rank of an 0x88 square.
 function rank(square: number): number {
     return square >> 4;

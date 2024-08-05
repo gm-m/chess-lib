@@ -16,7 +16,7 @@ describe.todo("Test Chessboard functions", () => {
     });
 });
 
-describe.only("Test isCheckmate", () => {
+describe("Test isCheckmate", () => {
     const chessboard = new ChessBoard();
     const testCases = [
         { fen: '6k1/R4p1p/8/6N1/3q4/8/2n1P3/4KB2 w - - 0 1', expectedCheckmate: true },
