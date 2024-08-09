@@ -28,6 +28,24 @@ Returns a boolean indicating whether if the side to move has been stalemated.
 
 Returns a boolean indicating whether if there is no way to end the game in checkmate.
 
+### .isDraw()
+
+Returns a boolean indicating whether if isStaleMate or isInsufficientMaterial or isThreefoldRepetition.
+
+### .getSquare()
+
+Returns the piece type and color of the given square.
+
+```ts
+
+chessBoard.getSquare(Squares.e1); // { type: 'K', color: 'w' }
+
+```
+
+### .getMoveNumber()
+
+Returns a number indicating the current move.
+
 ### .movePiece({fromSquare, toSquare})
 
 Moves a piece from the a square to another.

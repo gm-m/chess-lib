@@ -116,6 +116,64 @@ export const getSquareIndex = (stringSquare: string) => {
 */
 export type PieceCoordinates = [string, number];
 
+export type GameVariant = 'standard' | '960';
+
+
+export type InitBoard = {
+    fen?: string;
+    variant?: GameVariant;
+};
+
+function placeBackRankPieces() {
+    const squares = [0, 1, 2, 3, 4, 5, 6, 7];
+
+    // Place bishops on opposite colors
+    const darkSquares = [1, 3, 5, 7];
+    const lightSquares = [0, 2, 4, 6];
+    const darkBishopPosition = darkSquares[Math.floor(Math.random() * darkSquares.length)];
+    const lightBishopPosition = lightSquares[Math.floor(Math.random() * lightSquares.length)];
+
+    const result = new Array(8).fill(null);
+    result[darkBishopPosition] = 'b';
+    result[lightBishopPosition] = 'b';
+
+    // Place king and rooks
+    const availableSquares = squares.filter(sq => result[sq] === null);
+    const kingRookPositions = availableSquares.sort(() => Math.random() - 0.5).slice(0, 3);
+    kingRookPositions.sort((a, b) => a - b);
+
+    result[kingRookPositions[0]] = 'r';
+    result[kingRookPositions[1]] = 'k';
+    result[kingRookPositions[2]] = 'r';
+
+    // Place queen and knights
+    const remainingSquares = result.map((piece, index) => piece === null ? index : null).filter(sq => sq !== null);
+    const [queenPosition, ...knightPositions] = remainingSquares.sort(() => Math.random() - 0.5);
+
+    result[queenPosition] = 'q';
+    knightPositions.forEach(pos => result[pos] = 'n');
+
+    return result;
+}
+
+function generateFENString(backRank: string[]) {
+    const fenParts = [];
+    fenParts.push(backRank.join('')); // First rank (black pieces)
+    fenParts.push('pppppppp'); // Second rank (black pawns)
+    fenParts.push('8', '8', '8', '8'); // Empty ranks
+    fenParts.push('PPPPPPPP'); // Seventh rank (white pawns)
+    fenParts.push(backRank.join('').toUpperCase()); // Eighth rank (white pieces)
+
+    return fenParts.join('/') + ' w KQkq - 0 1'; // ' w' (White to move), 'KQkq' (all castling rights available), '-' (no en passant square), '0 1' (zero halfmoves, first full move).
+}
+
+
+function generateFischerRandomFEN() {
+    const backRank = placeBackRankPieces();
+    return generateFENString(backRank);
+}
+
+
 export class ChessBoard {
     static instance: ChessBoard;
     static enpassant = Squares.no_sq;
@@ -254,39 +312,30 @@ export class ChessBoard {
     static legalMoves = new MoveList();
     static side: PieceColor = PieceColor.WHITE;
 
+    // Board State
     totalPieces = 0;
     moveNumber = 0;
+    fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    trickyFen: string = "7k/p4Q2/6R1/8/8/3K4/8/8 w - - 0 1";
+    PGN: string = '';
 
     // TODO : Move to a better place
     isWhiteKingAttacked: boolean = false;
     isBlackKingAttacked: boolean = false;
 
-    // trickyFen: string = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPbBPPP/R3K2R w KQkq - 0 1";
-    // trickyFen: string = "r3k2r/ppp3bp/1nn2pp1/4p3/2N1PP2/1P4PN/PBP3BP/2KR3R w - - 0 1";
-    // trickyFen: string = "rn1q2k1/1p3pb1/p2p2p1/2pP2B1/P1P1r1b1/5N2/1P2BPP1/R2Q1K1R b - - 3 15";
-    // trickyFen: string = "rn1q2k1/1p3pb1/p2p2p1/2pP2B1/P1P1r1b1/5p2/1P2BPP1/R2Q1K1R w - - 3 15";
-    // trickyFen: string = "4r1k1/3n1p2/pp1p1bp1/2pP4/P1P5/4PN1R/5KP1/1R6 w - - 0 27";
-    // trickyFen: string = "4k3/P7/8/8/8/8/8/6K1 w - - 0 1"; // Promotion
-
-    trickyFen: string = "7k/p4Q2/6R1/8/8/3K4/8/8 w - - 0 1";
-    defaultFen: string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    PGN: string = '';
-
     moveInvoker: MoveInvoker = new MoveInvoker(this);
 
-    constructor(fen?: string) {
+    constructor(initSettings?: InitBoard) {
         if (ChessBoard.instance) {
             return ChessBoard.instance;
         }
 
         ChessBoard.instance = this;
 
-        if (!fen) fen = this.defaultFen;
-
-        this.parseFen(fen);
-        // this.getAllLegalMoves();
-
-        ChessBoard.legalMoves.printMoves();
+        if (initSettings?.variant === "960") {
+            this.fen = generateFischerRandomFEN();
+        }
+        this.parseFen(this.fen);
     }
 
     public increaseMoveNumber() {
