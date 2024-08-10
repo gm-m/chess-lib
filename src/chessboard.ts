@@ -351,15 +351,7 @@ export class ChessBoard {
     }
 
     resetBoard() {
-        for (let rank = 0; rank < 8; rank++) {
-            for (let file = 0; file < 16; file++) {
-                const square = (rank * 16) + file;
-
-                if (!(square & 0x88)) {
-                    ChessBoard.board[square] = PieceType.EMPTY;
-                }
-            }
-        }
+        this.iterateBoard((square: Squares) => ChessBoard.board[square] = PieceType.EMPTY);
     }
 
     static getOppositeSideColor(side: PieceColor = ChessBoard.side): PieceColor {
@@ -625,8 +617,10 @@ export class ChessBoard {
                     if (isAlphabetCharacter(nextFenChar)) {
                         if (nextFenChar === PieceType.WHITE_KING) {
                             PieceBaseClass.KING_SQUARES[PieceColor.WHITE] = square;
+                            console.log("KING_SQUARES:", PieceBaseClass.KING_SQUARES);
                         } else if (nextFenChar === PieceType.BLACK_KING) {
                             PieceBaseClass.KING_SQUARES[PieceColor.BLACK] = square;
+                            console.log("KING_SQUARES:", PieceBaseClass.KING_SQUARES);
                         }
 
                         // Set the piece on board
@@ -692,7 +686,7 @@ export class ChessBoard {
 
         nextFenChar = fenIterator.next().value;
         nextFenChar != '-' ? console.log("Enpassant") : console.log("No Enpassant");
-        console.log("KING_SQUARES:", PieceBaseClass.KING_SQUARES);
+
         console.log("Pieces on board:", this.totalPieces);
         console.groupEnd();
 
@@ -772,8 +766,13 @@ export class ChessBoard {
 
         return pieces;
     }
-    public getMoveNumber(): number {
-        return this.moveNumber;
+    }
+
+    public clear() {
+        this.totalPieces = 0;
+
+        const emptyBoardFen = '8/8/8/8/8/8/8/8 w - - 0 1';
+        this.parseFen(emptyBoardFen);
     }
 
     public prettyPrint(): void {

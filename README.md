@@ -47,7 +47,7 @@ chessBoard.getSquare(Squares.e1); // { type: 'K', color: 'w' }
 Returns an array representation of the pieces on the board.
 
 ```ts
-const board = new ChessBoard({ fen: '8/7P/4kbK1/5N2/8/8/8/8 w HAha - 0 1' });
+const chessBoard = new ChessBoard({ fen: '8/7P/4kbK1/5N2/8/8/8/8 w HAha - 0 1' });
 chessBoard.getBoardPieces();
 
 /*
@@ -92,3 +92,7 @@ Moves a piece from the a square to another.
 ### .undoMove(quantity?: number)
 
 Undo the last half-move, or the number of moves given in input.
+
+### .clear()
+
+Remove every piece from the board. The new FEN will be: 8/8/8/8/8/8/8/8 w - - 0 1
