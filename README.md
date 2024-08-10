@@ -42,6 +42,45 @@ chessBoard.getSquare(Squares.e1); // { type: 'K', color: 'w' }
 
 ```
 
+### .getBoardPieces()
+
+Returns an array representation of the pieces on the board.
+
+```ts
+const board = new ChessBoard({ fen: '8/7P/4kbK1/5N2/8/8/8/8 w HAha - 0 1' });
+chessBoard.getBoardPieces();
+
+/*
+[
+    {
+        "square": "h7",
+        "piece": "P",
+        "color": "w"
+    },
+    {
+        "square": "e6",
+        "piece": "k",
+        "color": "b"
+    },
+    {
+        "square": "f6",
+        "piece": "b",
+        "color": "b"
+    },
+    {
+        "square": "g6",
+        "piece": "K",
+        "color": "w"
+    },
+    {
+        "square": "f5",
+        "piece": "N",
+        "color": "w"
+    }
+]
+*/.
+```
+
 ### .getMoveNumber()
 
 Returns a number indicating the current move.

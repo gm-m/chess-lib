@@ -9,11 +9,11 @@ import { PieceBaseClass, PieceType } from "./piece/piece";
 import Rook from "./piece/rook";
 import {
     charToPieceType,
-    prettyLog,
+    decodePieceColor,
     getPieceColor,
+    getSquareColor,
     isAlphabetCharacter,
-    isDigitCharacter,
-    getSquareColor
+    isDigitCharacter
 } from "./utility";
 
 
@@ -115,6 +115,7 @@ export const getSquareIndex = (stringSquare: string) => {
     - Rank (number). Only numbers beetwen 1 and 8
 */
 export type PieceCoordinates = [string, number];
+export type BoardPiece = { square: string, piece: PieceType; color: 'w' | 'b'; };
 
 export type GameVariant = 'standard' | '960';
 
@@ -314,7 +315,7 @@ export class ChessBoard {
 
     // Board State
     totalPieces = 0;
-    moveNumber = 0;
+    fullMoveNumber = 0;
     fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     trickyFen: string = "7k/p4Q2/6R1/8/8/3K4/8/8 w - - 0 1";
     PGN: string = '';
@@ -334,12 +335,15 @@ export class ChessBoard {
 
         if (initSettings?.variant === "960") {
             this.fen = generateFischerRandomFEN();
+        } else if (initSettings?.fen) {
+            this.fen = initSettings.fen;
         }
+
         this.parseFen(this.fen);
     }
 
     public increaseMoveNumber() {
-        this.moveNumber++;
+        this.fullMoveNumber++;
     }
 
     appendToPGN(pgn: string) {
@@ -756,24 +760,18 @@ export class ChessBoard {
         }
     }
 
-    handleAttackedKing() {
-        if (this.isWhiteKingAttacked) {
-            prettyLog("White King is Attacked");
-            return;
-        }
-
-        if (this.isBlackKingAttacked) {
-            prettyLog("Black King is Attacked");
-            return;
-        }
-
-        prettyLog("No King is under attack");
-    }
-
     public getSquare(square: Squares) {
-        return { piece: ChessBoard.board[square], color: getPieceColor(square) };
+        return { piece: ChessBoard.board[square], color: decodePieceColor(getPieceColor(square)!) };
     }
 
+    public getBoardPieces(): BoardPiece[] {
+        let pieces: BoardPiece[] = [];
+        this.iterateBoard((square: number) => {
+            pieces.push({ square: SQUARE_TO_COORDS[square], ...this.getSquare(square) });
+        });
+
+        return pieces;
+    }
     public getMoveNumber(): number {
         return this.moveNumber;
     }

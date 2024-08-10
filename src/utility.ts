@@ -45,6 +45,10 @@ export function decodeEnum(el: any) {
     return match ? match[0] : undefined;
 }
 
+export function decodePieceColor(color: PieceColor): 'w' | 'b' {
+    return color === 0 ? 'w' : 'b';
+}
+
 export function getPieceColor(square: Squares): PieceColor | undefined {
     if (WHITE_PIECES.includes(ChessBoard.board[square])) {
         return PieceColor.WHITE;
