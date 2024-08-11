@@ -85,6 +85,10 @@ chessBoard.getBoardPieces();
 
 Returns a number indicating the current move.
 
+### .getFen()
+
+Returns the FEN of the current position.
+
 ### .movePiece({fromSquare, toSquare})
 
 Moves a piece from the a square to another.

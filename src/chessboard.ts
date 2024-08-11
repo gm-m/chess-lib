@@ -314,10 +314,11 @@ export class ChessBoard {
     static side: PieceColor = PieceColor.WHITE;
 
     // Board State
+    enpassant = false;
     totalPieces = 0;
+    halfMoveNumber = 0;
     fullMoveNumber = 0;
     fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    trickyFen: string = "7k/p4Q2/6R1/8/8/3K4/8/8 w - - 0 1";
     PGN: string = '';
 
     // TODO : Move to a better place
@@ -600,12 +601,57 @@ export class ChessBoard {
         return bishopColors[0] === bishopColors[1];
     }
 
+    getFen() {
+        let fen = '';
+
+        for (let rank = 0; rank < 8; rank++) {
+            let file: number = 0;
+            let emptySquares = 0;
+
+            while (file < 16) {
+                let square: number = (rank * 16) + file;
+
+                // If square is on Board
+                if (!(square & 0x88)) {
+                    const piece = ChessBoard.board[square];
+
+                    if (piece === PieceType.EMPTY) {
+                        emptySquares++;
+                    } else {
+                        if (emptySquares > 0) fen += emptySquares;
+                        fen += piece;
+
+                        emptySquares = 0;
+                    }
+                }
+
+                file++;
+            }
+
+            if (emptySquares > 0) fen += emptySquares;
+            if (rank < 7) fen += '/';
+        }
+
+        // Append side to move
+        fen += ' ' + decodePieceColor(ChessBoard.side);
+
+        // Append enpassant
+        if (this.enpassant === false) fen += ' -';
+
+        // Append moves number
+        fen += ` ${this.halfMoveNumber}`;
+        fen += ` ${this.fullMoveNumber || 1}`;
+
+        // TODO: Castling
+
+        return fen;
+    }
+
     parseFen(fen: string) {
         this.resetBoard();
 
         let fenIterator = fen[Symbol.iterator]();
         let nextFenChar: string = fenIterator.next().value;
-
         for (let rank = 0; rank < 8; rank++) {
             let file: number = 0;
 
@@ -685,8 +731,9 @@ export class ChessBoard {
         }
 
         nextFenChar = fenIterator.next().value;
-        nextFenChar != '-' ? console.log("Enpassant") : console.log("No Enpassant");
+        this.enpassant = nextFenChar === '-';
 
+        console.log("Enpassant: ", this.enpassant);
         console.log("Pieces on board:", this.totalPieces);
         console.groupEnd();
 
@@ -766,6 +813,9 @@ export class ChessBoard {
 
         return pieces;
     }
+
+    public getFullMoveNumber(): number {
+        return this.fullMoveNumber;
     }
 
     public clear() {
