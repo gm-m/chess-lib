@@ -34,11 +34,14 @@ Returns a boolean indicating whether if isStaleMate or isInsufficientMaterial or
 
 ### .getSquare()
 
-Returns the piece type and color of the given square.
+Returns the piece and color of the given square.
 
 ```ts
 
-chessBoard.getSquare(Squares.e1); // { type: 'K', color: 'w' }
+const chessBoard = new ChessBoard({ fen: '8/pN1b2Q1/8/5P2/2k2K2/6P1/8/7r w - - 0 1' });
+
+chessBoard.getSquare(Squares.e1); // { piece: 'K', color: 'w' }
+chessBoard.getSquare(Squares.e6); // { piece: 'e', color: 'b' }
 
 ```
 

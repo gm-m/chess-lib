@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { ChessBoard } from './chessboard';
+import { ChessBoard, Squares } from './chessboard';
 
 describe.todo("Test Chessboard functions", () => {
     const chessboard = new ChessBoard();
@@ -11,7 +11,24 @@ describe.todo("Test Chessboard functions", () => {
     testCases.forEach(({ fen, expectedMoveNumber }) => {
         test(`getMoveNumber(${fen}) should return ${expectedMoveNumber}`, () => {
             chessboard.parseFen(fen);
-            expect(chessboard.getMoveNumber()).toEqual(expectedMoveNumber);
+            expect(chessboard.getFullMoveNumber()).toEqual(expectedMoveNumber);
+        });
+    });
+});
+
+describe("Test getSquare", () => {
+    const chessboard = new ChessBoard();
+    const testCases = [
+        { fen: '8/8/8/2p1pR2/3rk1P1/2K5/8/8 w - - 6 67', square: Squares.e4, expectedOutput: { piece: 'k', color: 'b' } },
+        { fen: '8/pN1b2Q1/8/5P2/2k2K2/6P1/8/7r w - - 0 1', square: Squares.g3, expectedOutput: { piece: 'P', color: 'w' } },
+        { fen: '8/pN1b2Q1/8/5P2/2k2K2/6P1/8/7r w - - 0 1', square: Squares.a6, expectedOutput: { piece: 'e', color: 'b' } },
+        { fen: '6R1/p3r1k1/P1q2bp1/8/5P1P/6P1/Q6K/8 b - - 2 58', square: Squares.a2, expectedOutput: { piece: 'Q', color: 'w' } },
+    ];
+
+    testCases.forEach(({ fen, square, expectedOutput }) => {
+        test(`getSquare(${fen}) should return ${expectedOutput}`, () => {
+            chessboard.parseFen(fen);
+            expect(chessboard.getSquare(square)).toEqual(expectedOutput);
         });
     });
 });
@@ -33,7 +50,7 @@ describe("Test isCheckmate", () => {
     testCases.forEach(({ fen, expectedCheckmate }) => {
         test(`isCheckmate(${fen}) should return ${expectedCheckmate}`, () => {
             chessboard.parseFen(fen);
-            expect(chessboard.isCheckmate()).toEqual(expectedCheckmate);
+            expect(chessboard.isCheckmate()).toBe(expectedCheckmate);
         });
     });
 });
