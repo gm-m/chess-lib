@@ -19,16 +19,109 @@ describe.todo("Test Chessboard functions", () => {
 describe("Test getSquare", () => {
     const chessboard = new ChessBoard();
     const testCases = [
-        { fen: '8/8/8/2p1pR2/3rk1P1/2K5/8/8 w - - 6 67', square: Squares.e4, expectedOutput: { piece: 'k', color: 'b' } },
-        { fen: '8/pN1b2Q1/8/5P2/2k2K2/6P1/8/7r w - - 0 1', square: Squares.g3, expectedOutput: { piece: 'P', color: 'w' } },
-        { fen: '8/pN1b2Q1/8/5P2/2k2K2/6P1/8/7r w - - 0 1', square: Squares.a6, expectedOutput: { piece: 'e', color: 'b' } },
-        { fen: '6R1/p3r1k1/P1q2bp1/8/5P1P/6P1/Q6K/8 b - - 2 58', square: Squares.a2, expectedOutput: { piece: 'Q', color: 'w' } },
+        { fen: '8/8/8/2p1pR2/3rk1P1/2K5/8/8 w - - 6 67', square: Squares.e4, expectedOutput: { piece: 'k', color: 'w' } },
+        { fen: '8/pN1b2Q1/8/5P2/2k2K2/6P1/8/7r w - - 0 1', square: Squares.g3, expectedOutput: { piece: 'P', color: 'b' } },
+        { fen: '8/pN1b2Q1/8/5P2/2k2K2/6P1/8/7r w - - 0 1', square: Squares.a6, expectedOutput: { piece: 'e', color: 'w' } },
+        { fen: '6R1/p3r1k1/P1q2bp1/8/5P1P/6P1/Q6K/8 b - - 2 58', square: Squares.c6, expectedOutput: { piece: 'q', color: 'w' } },
     ];
 
     testCases.forEach(({ fen, square, expectedOutput }) => {
         test(`getSquare(${fen}) should return ${expectedOutput}`, () => {
             chessboard.parseFen(fen);
             expect(chessboard.getSquare(square)).toEqual(expectedOutput);
+        });
+    });
+});
+
+describe("Test getBoardPieces", () => {
+    const chessboard = new ChessBoard();
+    const testCases = [
+        {
+            fen: '8/8/8/2p1pR2/3rk1P1/2K5/8/8 w - - 6 67',
+            expectedPieces: [
+                {
+                    "color": "b",
+                    "piece": "p",
+                    "square": "c5",
+                },
+                {
+                    "color": "b",
+                    "piece": "p",
+                    "square": "e5",
+                },
+                {
+                    "color": "w",
+                    "piece": "R",
+                    "square": "f5",
+                },
+                {
+                    "color": "b",
+                    "piece": "r",
+                    "square": "d4",
+                },
+                {
+                    "color": "b",
+                    "piece": "k",
+                    "square": "e4",
+                },
+                {
+                    "color": "w",
+                    "piece": "P",
+                    "square": "g4",
+                },
+                {
+                    "color": "w",
+                    "piece": "K",
+                    "square": "c3",
+                },
+            ]
+        },
+        {
+            fen: '8/p7/P4bPk/5P2/5K2/8/8/8 b - - 36 116',
+            expectedPieces: [
+                {
+                    "color": "b",
+                    "piece": "p",
+                    "square": "a7",
+                },
+                {
+                    "color": "w",
+                    "piece": "P",
+                    "square": "a6",
+                },
+                {
+                    "color": "b",
+                    "piece": "b",
+                    "square": "f6",
+                },
+                {
+                    "color": "w",
+                    "piece": "P",
+                    "square": "g6",
+                },
+                {
+                    "color": "b",
+                    "piece": "k",
+                    "square": "h6",
+                },
+                {
+                    "color": "w",
+                    "piece": "P",
+                    "square": "f5",
+                },
+                {
+                    "color": "w",
+                    "piece": "K",
+                    "square": "f4",
+                },
+            ]
+        }
+    ];
+
+    testCases.forEach(({ fen, expectedPieces }) => {
+        test(`getSquare(${fen}) should return ${expectedPieces}`, () => {
+            chessboard.parseFen(fen);
+            expect(chessboard.getBoardPieces()).toEqual(expectedPieces);
         });
     });
 });

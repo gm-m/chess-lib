@@ -802,13 +802,17 @@ export class ChessBoard {
     }
 
     public getSquare(square: Squares) {
-        return { piece: ChessBoard.board[square], color: decodePieceColor(getPieceColor(square)!) };
+        return { piece: ChessBoard.board[square], color: decodePieceColor(getSquareColor(square)) };
     }
 
     public getBoardPieces(): BoardPiece[] {
         let pieces: BoardPiece[] = [];
         this.iterateBoard((square: number) => {
-            pieces.push({ square: SQUARE_TO_COORDS[square], ...this.getSquare(square) });
+            pieces.push({
+                square: SQUARE_TO_COORDS[square],
+                piece: ChessBoard.board[square],
+                color: decodePieceColor(getPieceColor(square)!)
+            });
         });
 
         return pieces;
