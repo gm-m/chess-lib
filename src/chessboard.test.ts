@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { ChessBoard, Squares } from './chessboard';
+import { ChessBoard, SQUARE_TO_COORDS, Squares } from './chessboard';
 
 describe.todo("Test Chessboard functions", () => {
     const chessboard = new ChessBoard();
@@ -12,6 +12,22 @@ describe.todo("Test Chessboard functions", () => {
         test(`getMoveNumber(${fen}) should return ${expectedMoveNumber}`, () => {
             chessboard.parseFen(fen);
             expect(chessboard.getFullMoveNumber()).toEqual(expectedMoveNumber);
+        });
+    });
+});
+
+describe("Test removePiece", () => {
+    const chessboard = new ChessBoard();
+    const testCases = [
+        { fen: 'r3r1k1/p2qppbp/1n4p1/3b4/1QpP3B/4PN2/P3BPPP/1RR3K1 b - - 8 17', square: Squares.h4, expectedPiece: { piece: 'B', color: 'w' } },
+        { fen: '4r1k1/b2N4/p1p1r2p/2Pp4/P4P2/2P3P1/7P/1R3R1K b - - 3 32', square: Squares.b1, expectedPiece: { piece: 'R', color: 'w' } },
+        { fen: '4r1k1/b2N4/p1p1r2p/2Pp4/P4P2/2P3P1/7P/1R3R1K b - - 3 32', square: Squares.h7, expectedPiece: null },
+    ];
+
+    testCases.forEach(({ fen, square, expectedPiece }) => {
+        test(`removePiece at square ${SQUARE_TO_COORDS[square]}`, () => {
+            chessboard.parseFen(fen);
+            expect(chessboard.removePiece(square)).toEqual(expectedPiece);
         });
     });
 });

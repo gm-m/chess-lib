@@ -494,6 +494,14 @@ export class ChessBoard {
         this.moveInvoker.executeMove(move);
     }
 
+    public removePiece(square: Squares) {
+        const piece = this.getPiece(square);
+        if (ChessBoard.board[square] === PieceType.EMPTY) return null;
+        ChessBoard.board[square] = PieceType.EMPTY;
+
+        return piece;
+    }
+
     public undoMove(quantity?: number) {
         this.moveInvoker.undoMove(quantity);
     }
@@ -801,6 +809,10 @@ export class ChessBoard {
         }
     }
 
+    private getPiece(square: Squares) {
+        return { piece: ChessBoard.board[square], color: decodePieceColor(getPieceColor(square)!) };
+    }
+
     public getSquare(square: Squares) {
         return { piece: ChessBoard.board[square], color: decodePieceColor(getSquareColor(square)) };
     }
@@ -808,11 +820,7 @@ export class ChessBoard {
     public getBoardPieces(): BoardPiece[] {
         let pieces: BoardPiece[] = [];
         this.iterateBoard((square: number) => {
-            pieces.push({
-                square: SQUARE_TO_COORDS[square],
-                piece: ChessBoard.board[square],
-                color: decodePieceColor(getPieceColor(square)!)
-            });
+            pieces.push({ square: SQUARE_TO_COORDS[square], ...this.getPiece(square) });
         });
 
         return pieces;

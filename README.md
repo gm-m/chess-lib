@@ -92,6 +92,15 @@ Returns a number indicating the current move.
 
 Returns the FEN of the current position.
 
+### .removePiece(square)
+
+Remove and return the piece on the give square.
+
+```ts
+const chessBoard = new ChessBoard('r3r1k1/p2qppbp/1n4p1/3b4/1QpP3B/4PN2/P3BPPP/1RR3K1 b - - 8 17');
+chessBoard.remove(Squares.h4)  // { piece: 'B', color: 'w' }
+```
+
 ### .movePiece({fromSquare, toSquare})
 
 Moves a piece from the a square to another.
