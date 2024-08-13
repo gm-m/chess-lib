@@ -1,7 +1,8 @@
 import { describe, expect, test } from 'vitest';
 import { ChessBoard, SQUARE_TO_COORDS, Squares } from './chessboard';
+import { PieceColor } from './enum/PieceColor';
 
-describe.todo("Test Chessboard functions", () => {
+describe.todo("Test getFullMoveNumber", () => {
     const chessboard = new ChessBoard();
     const testCases = [
         { fen: '5r1k/rp5p/p2p1p2/4pB1Q/4P3/P2nP1qP/1P6/5R1K b - - 1 24', expectedMoveNumber: 24 },
@@ -12,6 +13,27 @@ describe.todo("Test Chessboard functions", () => {
         test(`getMoveNumber(${fen}) should return ${expectedMoveNumber}`, () => {
             chessboard.parseFen(fen);
             expect(chessboard.getFullMoveNumber()).toEqual(expectedMoveNumber);
+        });
+    });
+});
+
+describe("Test isInCheck", () => {
+    const chessboard = new ChessBoard();
+    const testCases = [
+        { fen: '8/8/7Q/8/3qp2p/4k2P/6P1/6K1 b - - 1 63', side: PieceColor.BLACK, expectedOutput: true },
+        { fen: '8/8/7p/6k1/2n1P3/6KN/6P1/8 b - - 5 55', side: PieceColor.BLACK, expectedOutput: true },
+        { fen: '4Q1k1/q5p1/7p/4n3/3p3n/4B1NP/5PPK/8 b - - 0 40', side: PieceColor.BLACK, expectedOutput: true },
+
+        { fen: '8/8/7p/4n1k1/4PN2/5K2/6P1/8 w - - 2 54', side: PieceColor.WHITE, expectedOutput: true },
+        { fen: '8/1b3k2/1P3p2/P3p3/2Np4/3P2P1/6K1/2B5 w - - 0 1', side: PieceColor.WHITE, expectedOutput: true },
+
+        { fen: '8/4P3/5kPK/5n2/8/8/8/8 w - - 3 72', side: PieceColor.BLACK, expectedOutput: false },
+    ];
+
+    testCases.forEach(({ fen, side, expectedOutput }) => {
+        test(`isInCheck(${side}) should return ${expectedOutput}`, () => {
+            chessboard.parseFen(fen);
+            expect(chessboard.isInCheck(side)).toBe(expectedOutput);
         });
     });
 });
