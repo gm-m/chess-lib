@@ -143,7 +143,40 @@ describe("Test getBoardPieces", () => {
     });
 });
 
-describe.only("Test isSquareAttacked", () => {
+
+describe.only("Test filterPseudoLegalMoves", () => {
+    const chessboard = new ChessBoard();
+    const testCases = [
+        {
+            fen: '4Q1k1/q5p1/7p/4n3/3p3n/4B1NP/5PPK/8 b - - 0 40',
+            expectedOutput: new Map([
+                [Squares.g8, [Squares.h7]]
+            ])
+        },
+        {
+            fen: '8/4P3/5kPK/5n2/8/8/8/8 w - - 3 72',
+            expectedOutput: new Map([
+                [Squares.h6, [Squares.h5, Squares.h7]]
+            ])
+        },
+        {
+            fen: '7K/4Pn2/5kP1/8/8/8/8/8 w - - 3 72',
+            expectedOutput: new Map([
+                [Squares.h8, [Squares.h7, Squares.g8]],
+                [Squares.g6, [Squares.f7]]
+            ])
+        },
+    ];
+
+    testCases.forEach(({ fen, expectedOutput }) => {
+        test(`filterPseudoLegalMoves should return ${expectedOutput}`, () => {
+            chessboard.loadFen(fen);
+            expect(chessboard.filterPseudoLegalMoves()).toEqual(expectedOutput);
+        });
+    });
+});
+
+describe("Test isSquareAttacked", () => {
     const chessboard = new ChessBoard();
     const testCases = [
         {
