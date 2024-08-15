@@ -11,7 +11,7 @@ describe.todo("Test getFullMoveNumber", () => {
 
     testCases.forEach(({ fen, expectedMoveNumber }) => {
         test(`getMoveNumber(${fen}) should return ${expectedMoveNumber}`, () => {
-            chessboard.parseFen(fen);
+            chessboard.loadFen(fen);
             expect(chessboard.getFullMoveNumber()).toEqual(expectedMoveNumber);
         });
     });
@@ -27,7 +27,7 @@ describe("Test removePiece", () => {
 
     testCases.forEach(({ fen, square, expectedPiece }) => {
         test(`removePiece at square ${SQUARE_TO_COORDS[square]}`, () => {
-            chessboard.parseFen(fen);
+            chessboard.loadFen(fen);
             expect(chessboard.removePiece(square)).toEqual(expectedPiece);
         });
     });
@@ -44,7 +44,7 @@ describe("Test getSquare", () => {
 
     testCases.forEach(({ fen, square, expectedOutput }) => {
         test(`getSquare(${fen}) should return ${expectedOutput}`, () => {
-            chessboard.parseFen(fen);
+            chessboard.loadFen(fen);
             expect(chessboard.getSquare(square)).toEqual(expectedOutput);
         });
     });
@@ -137,7 +137,7 @@ describe("Test getBoardPieces", () => {
 
     testCases.forEach(({ fen, expectedPieces }) => {
         test(`getSquare(${fen}) should return ${expectedPieces}`, () => {
-            chessboard.parseFen(fen);
+            chessboard.loadFen(fen);
             expect(chessboard.getBoardPieces()).toEqual(expectedPieces);
         });
     });
@@ -199,7 +199,7 @@ describe.only("Test isSquareAttacked", () => {
 
     testCases.forEach(({ fen, square, attackedFromColor, expectedOutput }) => {
         test(`isSquareAttacked(${square}) should return ${expectedOutput}`, () => {
-            chessboard.parseFen(fen);
+            chessboard.loadFen(fen);
             expect(ChessBoard.isSquareAttacked(square, attackedFromColor)).toBe(expectedOutput);
         });
     });
@@ -220,7 +220,7 @@ describe("Test isInCheck", () => {
 
     testCases.forEach(({ fen, side, expectedOutput }) => {
         test(`isInCheck(${side}) should return ${expectedOutput}`, () => {
-            chessboard.parseFen(fen);
+            chessboard.loadFen(fen);
             expect(chessboard.isInCheck(side)).toBe(expectedOutput);
         });
     });
@@ -242,7 +242,7 @@ describe("Test isCheckmate", () => {
 
     testCases.forEach(({ fen, expectedCheckmate }) => {
         test(`isCheckmate(${fen}) should return ${expectedCheckmate}`, () => {
-            chessboard.parseFen(fen);
+            chessboard.loadFen(fen);
             expect(chessboard.isCheckmate()).toBe(expectedCheckmate);
         });
     });
@@ -262,7 +262,7 @@ describe("Test isInsufficientMaterial", () => {
 
     testCases.forEach(({ fen, expectedOutput }) => {
         test(`isInsufficientMaterial(${fen}) should return ${expectedOutput}`, () => {
-            chessboard.parseFen(fen);
+            chessboard.loadFen(fen);
             expect(chessboard.isInsufficientMaterial()).toBe(expectedOutput);
         });
     });

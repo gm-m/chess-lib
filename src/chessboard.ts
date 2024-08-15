@@ -340,7 +340,7 @@ export class ChessBoard {
             this.fen = initSettings.fen;
         }
 
-        this.parseFen(this.fen);
+        this.loadFen(this.fen);
     }
 
     public increaseMoveNumber() {
@@ -497,6 +497,7 @@ export class ChessBoard {
 
     public removePiece(square: Squares) {
         const piece = this.getPiece(square);
+
         if (ChessBoard.board[square] === PieceType.EMPTY) return null;
         ChessBoard.board[square] = PieceType.EMPTY;
 
@@ -584,12 +585,24 @@ export class ChessBoard {
             }
         });
 
-        // King vs King
-        if (this.totalPieces === 2) return true;
+        if (this.totalPieces === 2) return true; // King vs King
         if (this.isKingVsKingAndMinorPiece(pieceCount)) return true;
         if (this.isKingAndBishopVsKingAndBishop(pieceCount, bishopColors)) return true;
 
         return false;
+    }
+
+    // TODO
+    public isThreefoldRepetition() {
+        return true;
+    }
+
+    public isDraw() {
+        return this.isStaleMate() || this.isInsufficientMaterial() || this.isThreefoldRepetition();
+    }
+
+    public isGameOver(): boolean {
+        return this.isCheckmate() || this.isDraw();
     }
 
     private isKingVsKingAndMinorPiece(pieceCount: Map<PieceType, number>): boolean {
@@ -662,7 +675,7 @@ export class ChessBoard {
         return fen;
     }
 
-    parseFen(fen: string) {
+    public loadFen(fen: string) {
         this.resetBoard();
 
         let fenIterator = fen[Symbol.iterator]();
@@ -841,7 +854,7 @@ export class ChessBoard {
         this.totalPieces = 0;
 
         const emptyBoardFen = '8/8/8/8/8/8/8/8 w - - 0 1';
-        this.parseFen(emptyBoardFen);
+        this.loadFen(emptyBoardFen);
     }
 
     public prettyPrint(): void {
