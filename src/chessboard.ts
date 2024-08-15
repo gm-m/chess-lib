@@ -857,6 +857,28 @@ export class ChessBoard {
         this.loadFen(emptyBoardFen);
     }
 
+    public getAscii() {
+        let ascii = '  +-------------------------------+\n';
+
+        const boardSize = 8;
+        for (let row = 0; row < boardSize; row++) {
+            let rowString = `${8 - row} |`;
+            for (let col = 0; col < boardSize; col++) {
+                const index = row * 16 + col;
+                const piece = ChessBoard.board[index];
+
+                rowString += ` ${piece === 'e' ? '.' : piece} |`;
+            }
+
+            ascii += `${rowString}\n`;
+        }
+
+        ascii += '  +-------------------------------+\n';
+        ascii += '    a   b   c   d   e   f   g   h';
+
+        return ascii;
+    }
+
     public prettyPrint(): void {
         const pieceRepresentation: { [key: string]: string; } = {
             'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚', 'p': '♟',

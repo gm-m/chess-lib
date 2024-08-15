@@ -32,6 +32,30 @@ Returns a boolean indicating whether if there is no way to end the game in check
 
 Returns a boolean indicating whether if isStaleMate or isInsufficientMaterial or isThreefoldRepetition.
 
+### .getAscii()
+
+Returns a string that rappresents the current position.
+
+```ts
+
+const chessBoard = new ChessBoard();
+chessBoard.movePiece({ fromSquare: Squares.c2, toSquare: Squares.c4 });
+chessBoard.movePiece({ fromSquare: Squares.e7, toSquare: Squares.e5 });
+
+//   +-------------------------------+
+// 8 | r | n | b | q | k | b | n | r |
+// 7 | p | p | p | p | . | p | p | p |
+// 6 | . | . | . | . | . | . | . | . |
+// 5 | . | . | . | . | p | . | . | . |
+// 4 | . | . | P | . | . | . | . | . |
+// 3 | . | . | . | . | . | . | . | . |
+// 2 | P | P | . | P | P | P | P | P |
+// 1 | R | N | B | Q | K | B | N | R |
+//   +-------------------------------+
+//     a   b   c   d   e   f   g   h
+
+```
+
 ### .getSquare()
 
 Returns the piece and color of the given square.
