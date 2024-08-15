@@ -143,6 +143,68 @@ describe("Test getBoardPieces", () => {
     });
 });
 
+describe.only("Test isSquareAttacked", () => {
+    const chessboard = new ChessBoard();
+    const testCases = [
+        {
+            fen: 'r1bk3r/pp3ppp/2n2n2/2bp4/8/2N2N2/PP2PPPP/R2QKB1R w KQ - 0 9',
+            square: Squares.d5,
+            attackedFromColor: PieceColor.WHITE,
+            expectedOutput: true
+        },
+        {
+            fen: 'r1bk3r/pp3ppp/2n2n2/2bN4/8/5N2/PP2PPPP/R2QKB1R b KQ - 0 9',
+            square: Squares.f2,
+            attackedFromColor: PieceColor.BLACK,
+            expectedOutput: true
+        },
+        {
+            fen: 'rn1q1rk1/4ppbp/B2p1np1/2pP4/P3P3/2N2N2/1P3PPP/R1BQK2R b KQ - 0 11',
+            square: Squares.a6,
+            attackedFromColor: PieceColor.BLACK,
+            expectedOutput: true
+        },
+        {
+            fen: 'rnbqkb1r/p2ppppp/5n2/1ppP4/2P5/8/PP2PPPP/RNBQKBNR w KQkq - 0 4',
+            square: Squares.b5,
+            attackedFromColor: PieceColor.WHITE,
+            expectedOutput: true
+        },
+        {
+            fen: 'rnbqkb1r/pp1pppp1/5n1p/2pP4/2P5/8/PP2PPPP/RNBQKBNR w KQkq c6 0 3', // Enpassant
+            square: Squares.c6,
+            attackedFromColor: PieceColor.WHITE,
+            expectedOutput: true
+        },
+        {
+            fen: '5r1k/rp5p/p2p1p2/4pB1Q/4P3/P2nP1qP/1P6/5R1K b - - 1 24', // Enpassant
+            square: Squares.f2,
+            attackedFromColor: PieceColor.BLACK,
+            expectedOutput: true
+        },
+
+        {
+            fen: 'rn1q1rk1/4ppbp/B2p1np1/2pP4/P3P3/2N2N2/1P3PPP/R1BQK2R b KQ - 0 11',
+            square: Squares.c4,
+            attackedFromColor: PieceColor.BLACK,
+            expectedOutput: false
+        },
+        {
+            fen: '5r1k/rp5p/p2p1p2/4pB1Q/4P3/P2nP1qP/1P6/5R1K w - - 1 24',
+            square: Squares.g7,
+            attackedFromColor: PieceColor.WHITE,
+            expectedOutput: false
+        },
+    ];
+
+    testCases.forEach(({ fen, square, attackedFromColor, expectedOutput }) => {
+        test(`isSquareAttacked(${square}) should return ${expectedOutput}`, () => {
+            chessboard.parseFen(fen);
+            expect(ChessBoard.isSquareAttacked(square, attackedFromColor)).toBe(expectedOutput);
+        });
+    });
+});
+
 describe("Test isInCheck", () => {
     const chessboard = new ChessBoard();
     const testCases = [
