@@ -352,6 +352,7 @@ export class ChessBoard {
     }
 
     resetBoard() {
+        this.totalPieces = 0;
         this.iterateBoard((square: Squares) => ChessBoard.board[square] = PieceType.EMPTY);
     }
 
@@ -565,6 +566,12 @@ export class ChessBoard {
     public isStaleMate(): boolean {
         return !this.isInCheck() && this.getAllLegalMoves(ChessBoard.side).size === 0;
     }
+
+    // Combinations with insufficient material to checkmate include:
+    // - King versus King
+    // - King and Bishop vs King
+    // - King and Knight vs king
+    // - King and Bishop vs King and Bishop with the Bishops on the same color.
 
     public isInsufficientMaterial(): boolean {
         const pieceCount = new Map<PieceType, number>();

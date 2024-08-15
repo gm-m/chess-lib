@@ -17,27 +17,6 @@ describe.todo("Test getFullMoveNumber", () => {
     });
 });
 
-describe("Test isInCheck", () => {
-    const chessboard = new ChessBoard();
-    const testCases = [
-        { fen: '8/8/7Q/8/3qp2p/4k2P/6P1/6K1 b - - 1 63', side: PieceColor.BLACK, expectedOutput: true },
-        { fen: '8/8/7p/6k1/2n1P3/6KN/6P1/8 b - - 5 55', side: PieceColor.BLACK, expectedOutput: true },
-        { fen: '4Q1k1/q5p1/7p/4n3/3p3n/4B1NP/5PPK/8 b - - 0 40', side: PieceColor.BLACK, expectedOutput: true },
-
-        { fen: '8/8/7p/4n1k1/4PN2/5K2/6P1/8 w - - 2 54', side: PieceColor.WHITE, expectedOutput: true },
-        { fen: '8/1b3k2/1P3p2/P3p3/2Np4/3P2P1/6K1/2B5 w - - 0 1', side: PieceColor.WHITE, expectedOutput: true },
-
-        { fen: '8/4P3/5kPK/5n2/8/8/8/8 w - - 3 72', side: PieceColor.BLACK, expectedOutput: false },
-    ];
-
-    testCases.forEach(({ fen, side, expectedOutput }) => {
-        test(`isInCheck(${side}) should return ${expectedOutput}`, () => {
-            chessboard.parseFen(fen);
-            expect(chessboard.isInCheck(side)).toBe(expectedOutput);
-        });
-    });
-});
-
 describe("Test removePiece", () => {
     const chessboard = new ChessBoard();
     const testCases = [
@@ -164,6 +143,27 @@ describe("Test getBoardPieces", () => {
     });
 });
 
+describe("Test isInCheck", () => {
+    const chessboard = new ChessBoard();
+    const testCases = [
+        { fen: '8/8/7Q/8/3qp2p/4k2P/6P1/6K1 b - - 1 63', side: PieceColor.BLACK, expectedOutput: true },
+        { fen: '8/8/7p/6k1/2n1P3/6KN/6P1/8 b - - 5 55', side: PieceColor.BLACK, expectedOutput: true },
+        { fen: '4Q1k1/q5p1/7p/4n3/3p3n/4B1NP/5PPK/8 b - - 0 40', side: PieceColor.BLACK, expectedOutput: true },
+
+        { fen: '8/8/7p/4n1k1/4PN2/5K2/6P1/8 w - - 2 54', side: PieceColor.WHITE, expectedOutput: true },
+        { fen: '8/1b3k2/1P3p2/P3p3/2Np4/3P2P1/6K1/2B5 w - - 0 1', side: PieceColor.WHITE, expectedOutput: true },
+
+        { fen: '8/4P3/5kPK/5n2/8/8/8/8 w - - 3 72', side: PieceColor.BLACK, expectedOutput: false },
+    ];
+
+    testCases.forEach(({ fen, side, expectedOutput }) => {
+        test(`isInCheck(${side}) should return ${expectedOutput}`, () => {
+            chessboard.parseFen(fen);
+            expect(chessboard.isInCheck(side)).toBe(expectedOutput);
+        });
+    });
+});
+
 describe("Test isCheckmate", () => {
     const chessboard = new ChessBoard();
     const testCases = [
@@ -182,6 +182,26 @@ describe("Test isCheckmate", () => {
         test(`isCheckmate(${fen}) should return ${expectedCheckmate}`, () => {
             chessboard.parseFen(fen);
             expect(chessboard.isCheckmate()).toBe(expectedCheckmate);
+        });
+    });
+});
+
+describe("Test isInsufficientMaterial", () => {
+    const chessboard = new ChessBoard();
+    const testCases = [
+        { fen: '8/4k3/8/6K1/8/8/8/8 w - - 0 1', expectedOutput: true }, // K vs K
+        { fen: '1k6/2n5/2K5/8/8/8/8/8 w - - 0 1', expectedOutput: true }, // K & N vs K
+        { fen: '8/8/8/8/8/5BK1/8/7k b - - 0 1', expectedOutput: true }, // K & B vs K
+        { fen: '4B3/4K3/8/4k3/2b5/8/8/8 w - - 0 1', expectedOutput: true }, // K & B vs K & B (Same colors)
+
+        { fen: '8/8/8/8/8/3N2K1/8/6nk w - - 0 1', expectedOutput: false }, // K & N vs K & N
+        { fen: '3B4/4K3/8/4k3/2b5/8/8/8 w - - 0 1', expectedOutput: false }, // K & B vs K & B (Different colors)
+    ];
+
+    testCases.forEach(({ fen, expectedOutput }) => {
+        test(`isInsufficientMaterial(${fen}) should return ${expectedOutput}`, () => {
+            chessboard.parseFen(fen);
+            expect(chessboard.isInsufficientMaterial()).toBe(expectedOutput);
         });
     });
 });
