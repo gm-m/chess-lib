@@ -170,4 +170,4 @@ Undo the last half-move, or the number of moves given in input.
 
 ### .clear()
 
-Remove every piece from the board. The new FEN will be: 8/8/8/8/8/8/8/8 w - - 0 1
+Remove every piece from the board. The new FEN will be: `8/8/8/8/8/8/8/8 w - - 0 1`

@@ -853,6 +853,37 @@ export class ChessBoard {
                 break;
         }
     }
+    public getMaterialAdvantage() {
+        const pieces = this.getBoardPieces();
+        const scoreMap = new Map<PieceType, number>([
+            [PieceType.WHITE_PAWN, 1],
+            [PieceType.BLACK_PAWN, -1],
+
+            [PieceType.WHITE_KNIGHT, 3],
+            [PieceType.BLACK_KNIGHT, -3],
+
+            [PieceType.WHITE_BISHOP, 3],
+            [PieceType.BLACK_BISHOP, -3],
+
+            [PieceType.WHITE_QUEEN, 9],
+            [PieceType.BLACK_QUEEN, -9],
+
+            [PieceType.WHITE_ROOK, 5],
+            [PieceType.BLACK_ROOK, -5],
+
+            [PieceType.WHITE_KING, 0],
+            [PieceType.BLACK_KING, 0],
+        ]);
+
+        const totalScore = pieces.reduce((score, piece) => {
+            return score + scoreMap.get(piece.piece)!;
+        }, 0);
+
+        return {
+            w: totalScore,
+            b: -totalScore
+        };
+    }
 
     private getPiece(square: Squares) {
         return { piece: ChessBoard.board[square], color: decodePieceColor(getPieceColor(square)!) };

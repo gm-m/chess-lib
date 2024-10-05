@@ -50,6 +50,32 @@ describe("Test getSquare", () => {
     });
 });
 
+describe("Test getMaterialAdvantage", () => {
+    const chessboard = new ChessBoard();
+    const testCases = [
+        {
+            fen: '8/8/8/2p1pR2/3rk1P1/2K5/8/8 w - - 6 67',
+            expectedScore: { w: -1, b: 1 }
+        },
+        {
+            fen: '1k6/R5R1/2p5/2Ppp3/7p/NP2P1nP/5KP1/r7 w - - 3 34',
+            expectedScore: { w: 6, b: -6 }
+        },
+        {
+            fen: '2nq3r/3r1pk1/1p2p1p1/p1b1PP2/P1Pp2P1/1P1R2Q1/1B4B1/5RK1 w - - 1 34',
+            expectedScore: { w: 0, b: -0 }
+        },
+
+    ];
+
+    testCases.forEach(({ fen, expectedScore }) => {
+        test(`getScore(${fen}) should return ${expectedScore}`, () => {
+            chessboard.loadFen(fen);
+            expect(chessboard.getMaterialAdvantage()).toEqual(expectedScore);
+        });
+    });
+});
+
 describe("Test getBoardPieces", () => {
     const chessboard = new ChessBoard();
     const testCases = [
