@@ -768,6 +768,31 @@ export class ChessBoard {
         this.getAllLegalMoves();
     }
 
+    private extractFenFromPgn(pgn: string) {
+        const indexOfFirstFenChar = (line: string) => line.indexOf('"');
+        const indexOfLastFenChar = (line: string) => line.lastIndexOf('"');
+
+        const lines = pgn.split('\n');
+        for (const line of lines) {
+            if (line.substring(1, 4) === 'FEN') {
+                const startIndex = indexOfFirstFenChar(line);
+                const endIndex = indexOfLastFenChar(line);
+
+                if (startIndex !== -1 && endIndex !== -1) {
+                    const fen = line.substring(startIndex + 1, endIndex);
+                    return fen;  // Stop the loop once FEN is found
+                }
+            }
+        }
+
+        return null;  // Return null if no FEN is found
+    }
+
+    public loadPGN(pgn: string) {
+        const fen = this.extractFenFromPgn(pgn);
+        fen ? this.loadFen(fen) : this.loadFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
+    }
+
     public exportPGN() {
         return "TODO";
     }

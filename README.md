@@ -8,6 +8,41 @@ Made using the [0x88](https://www.chessprogramming.org/0x88) chess board represe
 
 Print an ASCII diagram of the current position.
 
+### .loadFen()
+
+Resets the board and imports the given FEN string.
+
+### .loadPgn()
+
+Resets the chess board and imports a given PGN (Portable Game Notation) string. The method loads the FEN of the starting position from the PGN string, but does not import any subsequent moves.
+
+```ts
+const chessBoard = new ChessBoard();
+
+chessBoard.loadPGN(`
+    [Event "?"]
+    [Site "?"]
+    [Date "1128.??.??"]
+    [Round "?"]
+    [White "White to move"]
+    [Black "?"]
+    [Result "1-0"]
+    [SetUp "1"]
+    [FEN "rn2rk2/5pp1/p7/2pb1qN1/7Q/2P5/5PPP/1R3RK1 w - - 0 1"]
+    [PlyCount "0"]
+    [SourceTitle "31 agosot 2018"]
+    [Source "Tipter Napoleon"]
+    [SourceDate "2018.08.31"]
+    [SourceVersion "1"]
+    [SourceVersionDate "2018.08.31"]
+    [SourceQuality "1"]
+
+    1-0
+`)
+
+```
+
+
 ### .isSquareAttacked(square, color)
 
 Returns a boolean indicating whether a specific square is under attack by any piece belonging to a particular colour.
@@ -42,17 +77,17 @@ const chessBoard = new ChessBoard();
 chessBoard.movePiece({ fromSquare: Squares.c2, toSquare: Squares.c4 });
 chessBoard.movePiece({ fromSquare: Squares.e7, toSquare: Squares.e5 });
 
-//   +-------------------------------+
-// 8 | r | n | b | q | k | b | n | r |
-// 7 | p | p | p | p | . | p | p | p |
-// 6 | . | . | . | . | . | . | . | . |
-// 5 | . | . | . | . | p | . | . | . |
-// 4 | . | . | P | . | . | . | . | . |
-// 3 | . | . | . | . | . | . | . | . |
-// 2 | P | P | . | P | P | P | P | P |
-// 1 | R | N | B | Q | K | B | N | R |
-//   +-------------------------------+
-//     a   b   c   d   e   f   g   h
+//    +-------------------------------+
+//  8 | r | n | b | q | k | b | n | r |
+//  7 | p | p | p | p | . | p | p | p |
+//  6 | . | . | . | . | . | . | . | . |
+//  5 | . | . | . | . | p | . | . | . |
+//  4 | . | . | P | . | . | . | . | . |
+//  3 | . | . | . | . | . | . | . | . |
+//  2 | P | P | . | P | P | P | P | P |
+//  1 | R | N | B | Q | K | B | N | R |
+//    +-------------------------------+
+//      a   b   c   d   e   f   g   h
 
 ```
 
