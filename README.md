@@ -151,12 +151,23 @@ Returns a number indicating the current move.
 
 Returns the FEN of the current position.
 
+### .getMaterialAdvantage()
+
+Returns separate scores for white and black players. Calculates the material advantage in a based on the current board state.
+
+```ts
+const chessBoard = new ChessBoard({ fen: '1k6/R5R1/2p5/2Ppp3/7p/NP2P1nP/5KP1/r7 w - - 3 34' });
+
+chessBoard.getScore(); // { w: 6, b: -6 }
+```
+
 ### .removePiece(square)
 
 Remove and return the piece on the give square.
 
 ```ts
 const chessBoard = new ChessBoard('r3r1k1/p2qppbp/1n4p1/3b4/1QpP3B/4PN2/P3BPPP/1RR3K1 b - - 8 17');
+
 chessBoard.remove(Squares.h4)  // { piece: 'B', color: 'w' }
 ```
 
