@@ -9,6 +9,7 @@ import { PieceBaseClass, PieceType } from "./piece/piece";
 import Rook from "./piece/rook";
 import {
     charToPieceType,
+    decodeEnum,
     decodePieceColor,
     getPieceColor,
     getSquareColor,
@@ -881,7 +882,7 @@ export class ChessBoard {
 
         return {
             w: totalScore,
-            b: -totalScore
+            b: totalScore === 0 ? totalScore : -totalScore
         };
     }
 
@@ -904,6 +905,10 @@ export class ChessBoard {
 
     public getFullMoveNumber(): number {
         return this.fullMoveNumber;
+    }
+
+    public getHistory() {
+        return this.moveInvoker.movesHistory.map((move) => decodeEnum(move.toSquareIdx));
     }
 
     public clear() {

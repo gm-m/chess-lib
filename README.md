@@ -65,7 +65,7 @@ Returns a boolean indicating whether if there is no way to end the game in check
 
 ### .isDraw()
 
-Returns a boolean indicating whether if isStaleMate or isInsufficientMaterial or isThreefoldRepetition.
+Returns a boolean indicating whether if `isStaleMate` or `isInsufficientMaterial` or `isThreefoldRepetition`.
 
 ### .getAscii()
 
@@ -74,8 +74,10 @@ Returns a string that rappresents the current position.
 ```ts
 
 const chessBoard = new ChessBoard();
+
 chessBoard.movePiece({ fromSquare: Squares.c2, toSquare: Squares.c4 });
 chessBoard.movePiece({ fromSquare: Squares.e7, toSquare: Squares.e5 });
+chessBoard.getAscii();
 
 //    +-------------------------------+
 //  8 | r | n | b | q | k | b | n | r |
@@ -143,6 +145,21 @@ chessBoard.getBoardPieces();
 */.
 ```
 
+### .getHistory()
+
+Returns a list of the current game's moves.
+
+```ts
+
+const chessBoard = new ChessBoard();
+
+board.movePiece({ fromSquare: Squares.c2, toSquare: Squares.c4 });
+board.movePiece({ fromSquare: Squares.e7, toSquare: Squares.e5 });
+
+board.getHistory(); // [ "c4", "e5" ]
+
+```
+
 ### .getMoveNumber()
 
 Returns a number indicating the current move.
@@ -153,12 +170,12 @@ Returns the FEN of the current position.
 
 ### .getMaterialAdvantage()
 
-Returns separate scores for white and black players. Calculates the material advantage in a based on the current board state.
+Returns separate scores for white and black players. Calculates the material advantage based on the current board state.
 
 ```ts
 const chessBoard = new ChessBoard({ fen: '1k6/R5R1/2p5/2Ppp3/7p/NP2P1nP/5KP1/r7 w - - 3 34' });
 
-chessBoard.getScore(); // { w: 6, b: -6 }
+chessBoard.getMaterialAdvantage(); // { w: 6, b: -6 }
 ```
 
 ### .removePiece(square)
@@ -173,7 +190,7 @@ chessBoard.remove(Squares.h4)  // { piece: 'B', color: 'w' }
 
 ### .movePiece({fromSquare, toSquare})
 
-Moves a piece from the a square to another.
+Moves a piece from one square to another.
 
 ### .undoMove(quantity?: number)
 
