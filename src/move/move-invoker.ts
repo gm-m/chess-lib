@@ -213,9 +213,12 @@ export class MoveInvoker {
             const lastMove = this.movesHistory[this.movesHistory.length - (this.undoMoveCounter + 1)];
             if (!lastMove) return;
 
-            // TODO
-            // const { fromSquareIdx: fromSquare, toSquareIdx: toSquare } = lastMove;
-            // this.executeMove({ square: fromSquare }, { square: toSquare }, false);
+            const { fromSquareIdx: fromSquare, toSquareIdx: toSquare } = lastMove;
+            this.executeMove({
+                fromSquare,
+                toSquare,
+                rewindMove: false
+            });
         }
     }
 
