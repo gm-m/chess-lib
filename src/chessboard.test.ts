@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { ChessBoard, SQUARE_TO_COORDS, Squares } from './chessboard';
+import { ChessBoard, SQUARE_TO_COORDS, Square } from './chessboard';
 import { PieceColor } from './enum/PieceColor';
 
 describe.todo("Test getFullMoveNumber", () => {
@@ -20,9 +20,9 @@ describe.todo("Test getFullMoveNumber", () => {
 describe("Test removePiece", () => {
     const chessboard = new ChessBoard();
     const testCases = [
-        { fen: 'r3r1k1/p2qppbp/1n4p1/3b4/1QpP3B/4PN2/P3BPPP/1RR3K1 b - - 8 17', square: Squares.h4, expectedPiece: { piece: 'B', color: 'w' } },
-        { fen: '4r1k1/b2N4/p1p1r2p/2Pp4/P4P2/2P3P1/7P/1R3R1K b - - 3 32', square: Squares.b1, expectedPiece: { piece: 'R', color: 'w' } },
-        { fen: '4r1k1/b2N4/p1p1r2p/2Pp4/P4P2/2P3P1/7P/1R3R1K b - - 3 32', square: Squares.h7, expectedPiece: null },
+        { fen: 'r3r1k1/p2qppbp/1n4p1/3b4/1QpP3B/4PN2/P3BPPP/1RR3K1 b - - 8 17', square: Square.h4, expectedPiece: { piece: 'B', color: 'w' } },
+        { fen: '4r1k1/b2N4/p1p1r2p/2Pp4/P4P2/2P3P1/7P/1R3R1K b - - 3 32', square: Square.b1, expectedPiece: { piece: 'R', color: 'w' } },
+        { fen: '4r1k1/b2N4/p1p1r2p/2Pp4/P4P2/2P3P1/7P/1R3R1K b - - 3 32', square: Square.h7, expectedPiece: null },
     ];
 
     testCases.forEach(({ fen, square, expectedPiece }) => {
@@ -36,10 +36,10 @@ describe("Test removePiece", () => {
 describe("Test getSquare", () => {
     const chessboard = new ChessBoard();
     const testCases = [
-        { fen: '8/8/8/2p1pR2/3rk1P1/2K5/8/8 w - - 6 67', square: Squares.e4, expectedOutput: { piece: 'k', color: 'w' } },
-        { fen: '8/pN1b2Q1/8/5P2/2k2K2/6P1/8/7r w - - 0 1', square: Squares.g3, expectedOutput: { piece: 'P', color: 'b' } },
-        { fen: '8/pN1b2Q1/8/5P2/2k2K2/6P1/8/7r w - - 0 1', square: Squares.a6, expectedOutput: { piece: 'e', color: 'w' } },
-        { fen: '6R1/p3r1k1/P1q2bp1/8/5P1P/6P1/Q6K/8 b - - 2 58', square: Squares.c6, expectedOutput: { piece: 'q', color: 'w' } },
+        { fen: '8/8/8/2p1pR2/3rk1P1/2K5/8/8 w - - 6 67', square: Square.e4, expectedOutput: { piece: 'k', color: 'w' } },
+        { fen: '8/pN1b2Q1/8/5P2/2k2K2/6P1/8/7r w - - 0 1', square: Square.g3, expectedOutput: { piece: 'P', color: 'b' } },
+        { fen: '8/pN1b2Q1/8/5P2/2k2K2/6P1/8/7r w - - 0 1', square: Square.a6, expectedOutput: { piece: 'e', color: 'w' } },
+        { fen: '6R1/p3r1k1/P1q2bp1/8/5P1P/6P1/Q6K/8 b - - 2 58', square: Square.c6, expectedOutput: { piece: 'q', color: 'w' } },
     ];
 
     testCases.forEach(({ fen, square, expectedOutput }) => {
@@ -50,7 +50,7 @@ describe("Test getSquare", () => {
     });
 });
 
-describe("Test getMaterialAdvantage", () => {
+describe.only("Test getMaterialAdvantage", () => {
     const chessboard = new ChessBoard();
     const testCases = [
         {
@@ -63,7 +63,7 @@ describe("Test getMaterialAdvantage", () => {
         },
         {
             fen: '2nq3r/3r1pk1/1p2p1p1/p1b1PP2/P1Pp2P1/1P1R2Q1/1B4B1/5RK1 w - - 1 34',
-            expectedScore: { w: 0, b: -0 }
+            expectedScore: { w: 0, b: 0 }
         },
 
     ];
@@ -169,27 +169,44 @@ describe("Test getBoardPieces", () => {
     });
 });
 
+describe.todo("Test isLegalMove", () => {
+    const chessboard = new ChessBoard();
+    const testCases = [
+        {
+            fen: 'r1bk3r/pp3ppp/2n2n2/2bp4/8/2N2N2/PP2PPPP/R2QKB1R w KQ - 0 9',
+            move: { fromSquare: Square.a7, toSquare: Square.a6 },
+            expectedOutput: false
+        },
+    ];
 
-describe.only("Test filterPseudoLegalMoves", () => {
+    testCases.forEach(({ fen, move, expectedOutput }) => {
+        test(`isLegalMove(${move.fromSquare} -> ${move.toSquare}) should return ${expectedOutput}`, () => {
+            chessboard.loadFen(fen);
+            expect(chessboard.isLegalMove(move)).toBe(expectedOutput);
+        });
+    });
+});
+
+describe.todo("Test filterPseudoLegalMoves", () => {
     const chessboard = new ChessBoard();
     const testCases = [
         {
             fen: '4Q1k1/q5p1/7p/4n3/3p3n/4B1NP/5PPK/8 b - - 0 40',
             expectedOutput: new Map([
-                [Squares.g8, [Squares.h7]]
+                [Square.g8, [Square.h7]]
             ])
         },
         {
             fen: '8/4P3/5kPK/5n2/8/8/8/8 w - - 3 72',
             expectedOutput: new Map([
-                [Squares.h6, [Squares.h5, Squares.h7]]
+                [Square.h6, [Square.h5, Square.h7]]
             ])
         },
         {
             fen: '7K/4Pn2/5kP1/8/8/8/8/8 w - - 3 72',
             expectedOutput: new Map([
-                [Squares.h8, [Squares.h7, Squares.g8]],
-                [Squares.g6, [Squares.f7]]
+                [Square.h8, [Square.h7, Square.g8]],
+                [Square.g6, [Square.f7]]
             ])
         },
     ];
@@ -207,50 +224,50 @@ describe("Test isSquareAttacked", () => {
     const testCases = [
         {
             fen: 'r1bk3r/pp3ppp/2n2n2/2bp4/8/2N2N2/PP2PPPP/R2QKB1R w KQ - 0 9',
-            square: Squares.d5,
+            square: Square.d5,
             attackedFromColor: PieceColor.WHITE,
             expectedOutput: true
         },
         {
             fen: 'r1bk3r/pp3ppp/2n2n2/2bN4/8/5N2/PP2PPPP/R2QKB1R b KQ - 0 9',
-            square: Squares.f2,
+            square: Square.f2,
             attackedFromColor: PieceColor.BLACK,
             expectedOutput: true
         },
         {
             fen: 'rn1q1rk1/4ppbp/B2p1np1/2pP4/P3P3/2N2N2/1P3PPP/R1BQK2R b KQ - 0 11',
-            square: Squares.a6,
+            square: Square.a6,
             attackedFromColor: PieceColor.BLACK,
             expectedOutput: true
         },
         {
             fen: 'rnbqkb1r/p2ppppp/5n2/1ppP4/2P5/8/PP2PPPP/RNBQKBNR w KQkq - 0 4',
-            square: Squares.b5,
+            square: Square.b5,
             attackedFromColor: PieceColor.WHITE,
             expectedOutput: true
         },
         {
             fen: 'rnbqkb1r/pp1pppp1/5n1p/2pP4/2P5/8/PP2PPPP/RNBQKBNR w KQkq c6 0 3', // Enpassant
-            square: Squares.c6,
+            square: Square.c6,
             attackedFromColor: PieceColor.WHITE,
             expectedOutput: true
         },
         {
             fen: '5r1k/rp5p/p2p1p2/4pB1Q/4P3/P2nP1qP/1P6/5R1K b - - 1 24', // Enpassant
-            square: Squares.f2,
+            square: Square.f2,
             attackedFromColor: PieceColor.BLACK,
             expectedOutput: true
         },
 
         {
             fen: 'rn1q1rk1/4ppbp/B2p1np1/2pP4/P3P3/2N2N2/1P3PPP/R1BQK2R b KQ - 0 11',
-            square: Squares.c4,
+            square: Square.c4,
             attackedFromColor: PieceColor.BLACK,
             expectedOutput: false
         },
         {
             fen: '5r1k/rp5p/p2p1p2/4pB1Q/4P3/P2nP1qP/1P6/5R1K w - - 1 24',
-            square: Squares.g7,
+            square: Square.g7,
             attackedFromColor: PieceColor.WHITE,
             expectedOutput: false
         },

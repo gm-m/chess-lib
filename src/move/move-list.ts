@@ -1,24 +1,24 @@
-import { SQUARE_TO_COORDS, Squares } from "../chessboard";
+import { SQUARE_TO_COORDS, Square } from "../chessboard";
 import { decodeEnum } from "../utility";
 
 export class MoveList {
     counter: number = 0;
     executed: number[] = [];
 
-    encodedMovesMap: Map<Squares, number[]> = new Map();
-    legalMovesMap: Map<Squares, Squares[]> = new Map();
+    encodedMovesMap: Map<Square, number[]> = new Map();
+    legalMovesMap: Map<Square, Square[]> = new Map();
     // map: Map<Squares, MoveMapTest[a]> = new Map();
 
     constructor() {
     }
 
     // Decode move's source flag
-    private getMoveSource(encoded_move: number): Squares {
+    private getMoveSource(encoded_move: number): Square {
         return encoded_move & 127;
     }
 
     // Decode move's target flag
-    private getMoveTarget(encoded_move: number): Squares {
+    private getMoveTarget(encoded_move: number): Square {
         return (encoded_move >> 7) & 127;
     }
 
@@ -57,7 +57,7 @@ export class MoveList {
         this.executed = [];
     }
 
-    public hasLegalMoves(square: Squares) {
+    public hasLegalMoves(square: Square) {
         return this.legalMovesMap.has(square);
     }
 
@@ -73,7 +73,7 @@ export class MoveList {
             console.log("getMoveCastling", this.getMoveCastling(encodeMove));
         }
 
-        const [key, targetSquare]: [Squares, Squares] = [this.getMoveSource(encodeMove), this.getMoveTarget(encodeMove)];
+        const [key, targetSquare]: [Square, Square] = [this.getMoveSource(encodeMove), this.getMoveTarget(encodeMove)];
         this.legalMovesMap.set(key, [...(this.legalMovesMap.get(key) || []), targetSquare]);
         this.encodedMovesMap.set(key, [...(this.encodedMovesMap.get(key) || []), +`${encodeMove}${targetSquare}`]);
     }

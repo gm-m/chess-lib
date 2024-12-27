@@ -1,16 +1,16 @@
-import { ChessBoard, Squares } from "../chessboard";
+import { ChessBoard, Square } from "../chessboard";
 import { PieceColor } from "../enum/PieceColor";
 import { encodeMove } from "../move/move-invoker";
 import { BLACK_PIECES, PieceBaseClass, PieceType, WHITE_PIECES } from "./piece";
 
 
 export default class Queen extends PieceBaseClass {
-    constructor(coordinates: Squares, color: PieceColor) {
+    constructor(coordinates: Square, color: PieceColor) {
         super(coordinates, color);
         // this.getLegalMoves();
     }
 
-    static getLegalMoves(coordinates: Squares) {
+    static getLegalMoves(coordinates: Square) {
         const isCurrentPlayerKnight: boolean = (() => {
             if (ChessBoard.side === PieceColor.WHITE) {
                 return ChessBoard.board[coordinates] === PieceType.WHITE_KING;
@@ -21,7 +21,7 @@ export default class Queen extends PieceBaseClass {
 
         if (isCurrentPlayerKnight) {
             for (let index = 0; index < this.KNIGHT_OFFSETS.length; index++) {
-                let targetSquare: Squares = coordinates + this.KNIGHT_OFFSETS[index];
+                let targetSquare: Square = coordinates + this.KNIGHT_OFFSETS[index];
 
                 // TODO: Check if it is possible to use while instead of if just to be consistent with the other pieces
                 if (!(targetSquare & 0x88)) {

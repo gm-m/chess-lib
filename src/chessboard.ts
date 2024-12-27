@@ -25,7 +25,7 @@ export enum Castling {
     qc = 8,
 }
 
-export enum Squares {
+export enum Square {
     a8 = 0,
     b8,
     c8,
@@ -120,7 +120,6 @@ export type BoardPiece = { square: string, piece: PieceType; color: 'w' | 'b'; }
 
 export type GameVariant = 'standard' | '960';
 
-
 export type InitBoard = {
     fen?: string;
     variant?: GameVariant;
@@ -169,7 +168,6 @@ function generateFENString(backRank: string[]) {
     return fenParts.join('/') + ' w KQkq - 0 1'; // ' w' (White to move), 'KQkq' (all castling rights available), '-' (no en passant square), '0 1' (zero halfmoves, first full move).
 }
 
-
 function generateFischerRandomFEN() {
     const backRank = placeBackRankPieces();
     return generateFENString(backRank);
@@ -178,7 +176,7 @@ function generateFischerRandomFEN() {
 
 export class ChessBoard {
     static instance: ChessBoard;
-    static enpassant = Squares.no_sq;
+    static enpassant = Square.no_sq;
 
     static board: PieceType[] = [
         PieceType.BLACK_ROOK,
@@ -354,7 +352,7 @@ export class ChessBoard {
 
     resetBoard() {
         this.totalPieces = 0;
-        this.iterateBoard((square: Squares) => ChessBoard.board[square] = PieceType.EMPTY);
+        this.iterateBoard((square: Square) => ChessBoard.board[square] = PieceType.EMPTY);
     }
 
     static getOppositeSideColor(side: PieceColor = ChessBoard.side): PieceColor {
@@ -366,16 +364,16 @@ export class ChessBoard {
     }
 
     // TODO: Replace hardcoded seventhRankSquares with the following
-    //     [PieceColor.WHITE, [Squares.a7, Squares.h7]],
-    //     [PieceColor.BLACK, [Squares.a2, Squares.h2]],
+    //     [PieceColor.WHITE, [Square.a7, Square.h7]],
+    //     [PieceColor.BLACK, [Square.a2, Square.h2]],
     static readonly seventhRankSquares: Map<PieceColor, number[]> = new Map([
         [PieceColor.WHITE, [16, 31]],
         [PieceColor.BLACK, [96, 103]],
     ]);
 
     // TODO: Replace hardcoded seventhRankSquares with the following
-    //     [PieceColor.WHITE, [Squares.a8, Squares.h8]],
-    //     [PieceColor.BLACK, [Squares.a1, Squares.h1]],
+    //     [PieceColor.WHITE, [Square.a8, Square.h8]],
+    //     [PieceColor.BLACK, [Square.a1, Square.h1]],
     static readonly eighthRankSquares: Map<PieceColor, number[]> = new Map([
         [PieceColor.WHITE, [0, 7]],
         [PieceColor.BLACK, [112, 119]],
@@ -385,7 +383,7 @@ export class ChessBoard {
         square = number
         color = Attacked from color
     */
-    static isSquareAttacked(square: Squares, attackedFromColor: PieceColor): boolean {
+    static isSquareAttacked(square: Square, attackedFromColor: PieceColor): boolean {
         // PAWNS
         if (attackedFromColor === PieceColor.WHITE) {
             if (!(square + 17 & 0x88) && ChessBoard.board[square + 17] === PieceType.WHITE_PAWN) {
@@ -425,7 +423,7 @@ export class ChessBoard {
         // BISHOPS & QUEENS
         for (let index = 0; index < PieceBaseClass.BISHOP_OFFSETS.length; index++) {
             let offset = PieceBaseClass.BISHOP_OFFSETS[index];
-            let targetSquare: Squares = square + offset;
+            let targetSquare: Square = square + offset;
 
             while (!(targetSquare & 0x88)) {
                 if (attackedFromColor === PieceColor.WHITE) {
@@ -450,7 +448,7 @@ export class ChessBoard {
         // ROOKS & QUEENS
         for (let index = 0; index < PieceBaseClass.ROOK_OFFSETS.length; index++) {
             let offset = PieceBaseClass.ROOK_OFFSETS[index];
-            let targetSquare: Squares = square + offset;
+            let targetSquare: Square = square + offset;
 
             while (!(targetSquare & 0x88)) {
                 if (attackedFromColor === PieceColor.WHITE) {
@@ -496,7 +494,7 @@ export class ChessBoard {
         this.moveInvoker.executeMove(move);
     }
 
-    public removePiece(square: Squares) {
+    public removePiece(square: Square) {
         const piece = this.getPiece(square);
 
         if (ChessBoard.board[square] === PieceType.EMPTY) return null;
@@ -509,7 +507,11 @@ export class ChessBoard {
         this.moveInvoker.undoMove(quantity);
     }
 
-    private iterateBoard(callback: (square: Squares, piece: PieceType) => void) {
+    public redoMove(quantity?: number) {
+        this.moveInvoker.redoMove(quantity);
+    }
+
+    private iterateBoard(callback: (square: Square, piece: PieceType) => void) {
         for (let rank = 0; rank < 8; rank++) {
             for (let file = 0; file < 16; file++) {
                 const square: number = (rank * 16) + file;
@@ -579,7 +581,7 @@ export class ChessBoard {
         const pieceCount = new Map<PieceType, number>();
         const bishopColors: PieceColor[] = [];
 
-        this.iterateBoard((square: Squares, piece: PieceType) => {
+        this.iterateBoard((square: Square, piece: PieceType) => {
             pieceCount.set(piece, ((pieceCount.get(piece) || 0) + 1));
             if (piece === PieceType.BLACK_BISHOP || piece === PieceType.WHITE_BISHOP) {
                 bishopColors.push(getSquareColor(square)!);
@@ -798,7 +800,7 @@ export class ChessBoard {
         return "TODO";
     }
 
-    public getAllLegalMoves(side?: PieceColor): Map<Squares, Squares[]> {
+    public getAllLegalMoves(side?: PieceColor): Map<Square, Square[]> {
         ChessBoard.legalMoves.resetState();
 
         for (let rank = 0; rank < 8; rank++) {
@@ -816,10 +818,11 @@ export class ChessBoard {
             }
         }
 
+        // console.log(ChessBoard.legalMoves.legalMovesMap);
         return ChessBoard.legalMoves.legalMovesMap;
     }
 
-    public getLegalMovesFromSquare(fromSquare: Squares) {
+    public getLegalMovesFromSquare(fromSquare: Square) {
         const pieceType: PieceType = charToPieceType(ChessBoard.board[fromSquare]);
         const pieceColor = getPieceColor(fromSquare)!;
 
@@ -886,11 +889,11 @@ export class ChessBoard {
         };
     }
 
-    private getPiece(square: Squares) {
+    private getPiece(square: Square) {
         return { piece: ChessBoard.board[square], color: decodePieceColor(getPieceColor(square)!) };
     }
 
-    public getSquare(square: Squares) {
+    public getSquare(square: Square) {
         return { piece: ChessBoard.board[square], color: decodePieceColor(getSquareColor(square)) };
     }
 

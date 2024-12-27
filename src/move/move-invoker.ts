@@ -1,11 +1,11 @@
-import { ChessBoard, Squares } from "../chessboard";
+import { ChessBoard, Square } from "../chessboard";
 import { PieceColor } from "../enum/PieceColor";
 import { BLACK_PROMOTION_PIECES, PieceBaseClass, PieceType, WHITE_PROMOTION_PIECES } from "../piece/piece";
 import { decodeEnum, getPieceColor } from "../utility";
 
 
 export interface EncodeMove {
-    source: Squares;
+    source: Square;
     targetSquare: number;
     piece: typeof WHITE_PROMOTION_PIECES | typeof BLACK_PROMOTION_PIECES | 0;
     capture: boolean;
@@ -28,20 +28,20 @@ export function encodeMove(rawMove: EncodeMove): number {
 }
 
 export interface Move {
-    square: Squares;
+    square: Square;
 }
 
 interface MoveHistory {
-    fromSquareIdx: Squares;
-    toSquareIdx: Squares;
+    fromSquareIdx: Square;
+    toSquareIdx: Square;
     isCaptureMove: boolean;
     isCastlingMove: boolean;
     capturedPiece?: PieceType;
 }
 
 export interface MakeMove {
-    fromSquare: Squares,
-    toSquare: Squares,
+    fromSquare: Square,
+    toSquare: Square,
     rewindMove?: boolean;
     updateMoveHistory?: boolean;
 }
@@ -171,7 +171,7 @@ export class MoveInvoker {
         // this.chessboard.isCheckmate();
     }
 
-    private updateKingSquares(fromSquarePieceType: PieceType, toSquare: Squares) {
+    private updateKingSquares(fromSquarePieceType: PieceType, toSquare: Square) {
         if (fromSquarePieceType === PieceType.WHITE_KING) {
             PieceBaseClass.KING_SQUARES[PieceColor.WHITE] = toSquare;
         } else if (fromSquarePieceType === PieceType.BLACK_KING) {
@@ -195,7 +195,7 @@ export class MoveInvoker {
         if (!ChessBoard.legalMoves.hasLegalMoves(move.fromSquare)) return false;
 
         const legalMoves = ChessBoard.legalMoves.legalMovesMap.get(move.fromSquare)!;
-        return legalMoves.some((_move: Squares) => _move === move.toSquare);
+        return legalMoves.some((_move: Square) => _move === move.toSquare);
     }
 
     redoMove(quantity?: number) {

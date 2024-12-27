@@ -75,8 +75,8 @@ Returns a string that rappresents the current position.
 
 const chessBoard = new ChessBoard();
 
-chessBoard.movePiece({ fromSquare: Squares.c2, toSquare: Squares.c4 });
-chessBoard.movePiece({ fromSquare: Squares.e7, toSquare: Squares.e5 });
+chessBoard.movePiece({ fromSquare: Square.c2, toSquare: Square.c4 });
+chessBoard.movePiece({ fromSquare: Square.e7, toSquare: Square.e5 });
 chessBoard.getAscii();
 
 //    +-------------------------------+
@@ -101,8 +101,8 @@ Returns the piece and color of the given square.
 
 const chessBoard = new ChessBoard({ fen: '8/pN1b2Q1/8/5P2/2k2K2/6P1/8/7r w - - 0 1' });
 
-chessBoard.getSquare(Squares.e1); // { piece: 'K', color: 'w' }
-chessBoard.getSquare(Squares.e6); // { piece: 'e', color: 'b' }
+chessBoard.getSquare(Square.e1); // { piece: 'K', color: 'w' }
+chessBoard.getSquare(Square.e6); // { piece: 'e', color: 'b' }
 
 ```
 
@@ -153,8 +153,8 @@ Returns a list of the current game's moves.
 
 const chessBoard = new ChessBoard();
 
-board.movePiece({ fromSquare: Squares.c2, toSquare: Squares.c4 });
-board.movePiece({ fromSquare: Squares.e7, toSquare: Squares.e5 });
+board.movePiece({ fromSquare: Square.c2, toSquare: Square.c4 });
+board.movePiece({ fromSquare: Square.e7, toSquare: Square.e5 });
 
 board.getHistory(); // [ "c4", "e5" ]
 
@@ -185,7 +185,7 @@ Remove and return the piece on the give square.
 ```ts
 const chessBoard = new ChessBoard('r3r1k1/p2qppbp/1n4p1/3b4/1QpP3B/4PN2/P3BPPP/1RR3K1 b - - 8 17');
 
-chessBoard.remove(Squares.h4)  // { piece: 'B', color: 'w' }
+chessBoard.remove(Square.h4)  // { piece: 'B', color: 'w' }
 ```
 
 ### .movePiece({fromSquare, toSquare})
@@ -194,7 +194,11 @@ Moves a piece from one square to another.
 
 ### .undoMove(quantity?: number)
 
-Undo the last half-move, or the number of moves given in input.
+Undo the number of half-moves given in input.
+
+### .redoMove(quantity?: number)
+
+Redo the number of half-moves given in input.
 
 ### .clear()
 

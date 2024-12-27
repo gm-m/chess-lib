@@ -1,4 +1,4 @@
-import { ChessBoard, Squares } from "../chessboard";
+import { ChessBoard, Square } from "../chessboard";
 import { PieceColor } from "../enum/PieceColor";
 import { encodeMove } from "../move/move-invoker";
 import { PIECES, PROMOTION_PIECES, PieceBaseClass, PieceType } from "./piece";
@@ -7,18 +7,18 @@ import { PIECES, PROMOTION_PIECES, PieceBaseClass, PieceType } from "./piece";
 export default class Pawn extends PieceBaseClass {
     static readonly TWO_SQUARES_AHEAD_OFFSET = 32;
 
-    constructor(coordinates: Squares, color: PieceColor) {
+    constructor(coordinates: Square, color: PieceColor) {
         super(coordinates, color);
     }
 
-    static getLegalMoves(coordinates: Squares, color: PieceColor): Squares[] {
+    static getLegalMoves(coordinates: Square, color: PieceColor): Square[] {
         const isCurrentPlayerPawn = ChessBoard.board[coordinates] === (ChessBoard.side === PieceColor.WHITE ? PieceType.WHITE_PAWN : PieceType.BLACK_PAWN);
         if (!isCurrentPlayerPawn) {
             return ChessBoard.legalMoves.legalMovesMap.get(coordinates)!;
         }
 
         ChessBoard.legalMoves.resetExecuted();
-        const targetSquare: Squares = coordinates - PieceBaseClass.PAWN_OFFSETS[color];
+        const targetSquare: Square = coordinates - PieceBaseClass.PAWN_OFFSETS[color];
 
         // Pawn Promotion
         if (!(targetSquare & 0x88) && ChessBoard.board[targetSquare] === PieceType.EMPTY) {
@@ -71,9 +71,9 @@ export default class Pawn extends PieceBaseClass {
                 // Two squares ahead pawn move
                 const twoSquaresAheadMove: boolean = (() => {
                     if (color === PieceColor.WHITE) {
-                        return coordinates >= Squares.a2 && ChessBoard.board[coordinates - this.TWO_SQUARES_AHEAD_OFFSET] === PieceType.EMPTY;
+                        return coordinates >= Square.a2 && ChessBoard.board[coordinates - this.TWO_SQUARES_AHEAD_OFFSET] === PieceType.EMPTY;
                     } else {
-                        return coordinates >= Squares.a7 && coordinates <= Squares.h7 && ChessBoard.board[coordinates + this.TWO_SQUARES_AHEAD_OFFSET] === PieceType.EMPTY;
+                        return coordinates >= Square.a7 && coordinates <= Square.h7 && ChessBoard.board[coordinates + this.TWO_SQUARES_AHEAD_OFFSET] === PieceType.EMPTY;
                     }
                 })();
 

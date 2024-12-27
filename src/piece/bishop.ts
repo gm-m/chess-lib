@@ -1,15 +1,15 @@
-import { ChessBoard, Squares } from "../chessboard";
+import { ChessBoard, Square } from "../chessboard";
 import { PieceColor } from "../enum/PieceColor";
 import { encodeMove } from "../move/move-invoker";
 import { BLACK_PIECES, PieceBaseClass, PieceType, WHITE_PIECES } from "./piece";
 
 
 export default class Bishop extends PieceBaseClass {
-    constructor(coordinates: Squares, color: PieceColor) {
+    constructor(coordinates: Square, color: PieceColor) {
         super(coordinates, color);
     }
 
-    static getLegalMoves(coordinates: Squares, color: PieceColor): Squares[] {
+    static getLegalMoves(coordinates: Square, color: PieceColor): Square[] {
         const isCurrentPlayerBishopOrQueen: boolean = (() => {
             const pieceAtCoordinate = ChessBoard.board[coordinates];
             return pieceAtCoordinate === PieceType.WHITE_BISHOP ||
@@ -20,7 +20,7 @@ export default class Bishop extends PieceBaseClass {
 
         if (isCurrentPlayerBishopOrQueen) {
             for (let index = 0; index < 4; index++) {
-                let targetSquare: Squares = coordinates + this.BISHOP_OFFSETS[index];
+                let targetSquare: Square = coordinates + this.BISHOP_OFFSETS[index];
 
                 // Loop over attack ray
                 while (!(targetSquare & 0x88)) {

@@ -1,15 +1,15 @@
-import { ChessBoard, Squares } from "../chessboard";
+import { ChessBoard, Square } from "../chessboard";
 import { PieceColor } from "../enum/PieceColor";
 import { encodeMove } from "../move/move-invoker";
 import { BLACK_PIECES, PieceBaseClass, PieceType, WHITE_PIECES } from "./piece";
 
 
 export default class Rook extends PieceBaseClass {
-    constructor(coordinates: Squares, color: PieceColor) {
+    constructor(coordinates: Square, color: PieceColor) {
         super(coordinates, color);
     }
 
-    static getLegalMoves(coordinates: Squares, color: PieceColor): Squares[] {
+    static getLegalMoves(coordinates: Square, color: PieceColor): Square[] {
         const isRookOrQueen: boolean = (() => {
             const pieceAtCoordinate = ChessBoard.board[coordinates];
             return pieceAtCoordinate === PieceType.WHITE_ROOK ||
@@ -20,7 +20,7 @@ export default class Rook extends PieceBaseClass {
 
         if (isRookOrQueen) {
             for (let index = 0; index < 4; index++) {
-                let targetSquare: Squares = coordinates + this.ROOK_OFFSETS[index];
+                let targetSquare: Square = coordinates + this.ROOK_OFFSETS[index];
 
                 while (!(targetSquare & 0x88)) {
                     let targetPiece: PieceType = ChessBoard.board[targetSquare];

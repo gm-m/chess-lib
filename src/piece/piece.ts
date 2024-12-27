@@ -1,4 +1,4 @@
-import { ChessBoard, Squares } from "../chessboard";
+import { ChessBoard, Square } from "../chessboard";
 import { PieceColor } from "../enum/PieceColor";
 
 export enum PieceType {
@@ -30,13 +30,13 @@ export const PIECES: Map<PieceColor, PieceType[]> = new Map([
 
 export interface Piece {
     color: PieceColor;
-    coordinates: Squares;
+    coordinates: Square;
 }
 
 export class PieceBaseClass implements Piece {
     chessboard: ChessBoard = new ChessBoard();
     color: PieceColor;
-    coordinates: Squares;
+    coordinates: Square;
 
     // Piece move offsets
     static KNIGHT_OFFSETS = [33, 31, 18, 14, -33, -31, -18, -14] as const;
@@ -52,13 +52,13 @@ export class PieceBaseClass implements Piece {
         [this.BISHOP_OFFSETS[0], this.BISHOP_OFFSETS[1]]
     ] as const;
 
-    // TODO: Replace hard coded value 116 with Square.e1 and 4 with Squares.e8 enum
-    static KING_SQUARES: [Squares, Squares] = [116, 4];
+    // TODO: Replace hard coded value 116 with Square.e1 and 4 with Square.e8 enum
+    static KING_SQUARES: [Square, Square] = [116, 4];
 
     // dec 15 => bin 1111 => both kings can castle to both sides
     static CASTLE = 15 as const;
 
-    constructor(pieceCoordinates: Squares, pieceColor: PieceColor) {
+    constructor(pieceCoordinates: Square, pieceColor: PieceColor) {
         this.color = pieceColor;
         this.coordinates = pieceCoordinates;
     }

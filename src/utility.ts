@@ -1,5 +1,5 @@
 import { BLACK_PIECES, PieceType, WHITE_PIECES } from "./piece/piece";
-import { ChessBoard, Squares } from "./chessboard";
+import { ChessBoard, Square } from "./chessboard";
 import { PieceColor } from "./enum/PieceColor";
 
 // isAlphabetCharacter = (ch) => ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z';
@@ -41,7 +41,7 @@ export function charToPieceType(char: string): PieceType {
 }
 
 export function decodeEnum(el: any) {
-    const match = Object.entries(Squares).find(([_, value]) => value === el);
+    const match = Object.entries(Square).find(([_, value]) => value === el);
     return match ? match[0] : undefined;
 }
 
@@ -49,7 +49,7 @@ export function decodePieceColor(color: PieceColor): 'w' | 'b' {
     return color === 0 ? 'w' : 'b';
 }
 
-export function getPieceColor(square: Squares): PieceColor | undefined {
+export function getPieceColor(square: Square): PieceColor | undefined {
     if (WHITE_PIECES.includes(ChessBoard.board[square])) {
         return PieceColor.WHITE;
     }
@@ -59,7 +59,7 @@ export function getPieceColor(square: Squares): PieceColor | undefined {
     }
 }
 
-export function getSquareColor(square: Squares): PieceColor {
+export function getSquareColor(square: Square): PieceColor {
     return (rank(square) + file(square)) % 2 === 0 ? PieceColor.WHITE : PieceColor.BLACK;
 }
 
