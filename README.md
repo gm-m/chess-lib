@@ -63,6 +63,10 @@ Returns a boolean indicating whether if the side to move has been stalemated.
 
 Returns a boolean indicating whether if there is no way to end the game in checkmate.
 
+### .isThreefoldRepetition() [Not yet implemented]
+
+Returns a boolean indicating whether if there are three or more identical positions in the game history.
+
 ### .isDraw()
 
 Returns a boolean indicating whether if `isStaleMate` or `isInsufficientMaterial` or `isThreefoldRepetition`.
@@ -145,6 +149,18 @@ chessBoard.getBoardPieces();
 */.
 ```
 
+### .getLegalMoves(square?: Square) [Not yet implemented]
+
+Returns list of legal moves based on the current position. An optional square can be specified to obtain the legal moves for that square.
+
+```ts
+
+const chessBoard = new ChessBoard({ fen: '8/7P/4kbK1/8/8/8/8/8 w - - 4 3' });
+
+board.getLegalMoves(); // [ "h8", "h6, h5" ]
+
+```
+
 ### .getHistory()
 
 Returns a list of the current game's moves.
@@ -194,11 +210,11 @@ Moves a piece from one square to another.
 
 ### .undoMove(quantity?: number)
 
-Undo the number of half-moves given in input.
+Undo the number of half-moves given in input. Defaults to 1.
 
 ### .redoMove(quantity?: number)
 
-Redo the number of half-moves given in input.
+Redo the number of half-moves given in input. Defaults to 1.
 
 ### .clear()
 
