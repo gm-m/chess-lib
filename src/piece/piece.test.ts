@@ -11,8 +11,8 @@ beforeAll(() => {
     chessBoard = new ChessBoard();
 });
 
-function getLegalMoves(pieceType: any, square: Square, color: PieceColor) {
-    const legalMoves = pieceType.getLegalMoves(square, color);
+function getLegalMoves(piece: any, square: Square, color: PieceColor) {
+    const legalMoves = piece.getLegalMoves(square, color);
 
     onTestFinished(() => {
         ChessBoard.legalMoves.resetState();
@@ -25,7 +25,7 @@ function expectLegalMovesToBe(moveList: string[] | undefined) {
     expect(ChessBoard.legalMoves.decodeLegalMoves()).toEqual(moveList);
 }
 
-describe.skip("Test Pawn Moves", () => {
+describe("Test Pawn Moves", () => {
     test('white pawn moves', () => {
         chessBoard.loadFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 

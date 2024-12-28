@@ -791,7 +791,7 @@ export class ChessBoard {
         return null;  // Return null if no FEN is found
     }
 
-    public loadPGN(pgn: string) {
+    public loadPgn(pgn: string) {
         const fen = this.extractFenFromPgn(pgn);
         fen ? this.loadFen(fen) : this.loadFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
     }
@@ -820,6 +820,11 @@ export class ChessBoard {
 
         // console.log(ChessBoard.legalMoves.legalMovesMap);
         return ChessBoard.legalMoves.legalMovesMap;
+    }
+
+    public testGetLegalMoves(){
+        const legalMoves = Pawn.getLegalMoves(Square.a7, PieceColor.BLACK);
+        console.log("legalMoves: ", legalMoves);
     }
 
     public getLegalMovesFromSquare(fromSquare: Square) {
@@ -857,6 +862,53 @@ export class ChessBoard {
                 break;
         }
     }
+
+    // public isLegalMove(move: MakeMove) {
+    //     const legalMovesMap = new Map(ChessBoard.legalMoves.legalMovesMap); // Shallow copy of the og map, since it will get modified durint the execution of the moves
+    //     if (!legalMovesMap.has(move.fromSquare)) return false;
+
+    //     const legalMoves = legalMovesMap.get(move.fromSquare)!;
+    //     for (let index = 0; index < legalMoves.length; index++) {
+    //         if (legalMoves[index] !== move.toSquare) continue;
+
+    //         this.movePiece({ fromSquare: move.fromSquare, toSquare: move.toSquare, updateMoveHistory: true });
+    //         const currentSideToMove = ChessBoard.side;
+    //         const isInCheck = this.isInCheck(currentSideToMove) === false;
+    //         this.undoMove();
+
+    //         return !isInCheck;
+    //     }
+
+    //     return false;
+    // }
+
+    public isLegalMove(move: MakeMove) {
+        debugger;
+        const currentSideToMove = ChessBoard.side;
+
+        this.movePiece(move);
+        const isInCheck = this.isInCheck(currentSideToMove) === false;
+        this.undoMove();
+
+        return !isInCheck;
+    }
+
+
+    public filterPseudoLegalMoves() {
+        const pseudoLegalMovesMap = ChessBoard.legalMoves.legalMovesMap;
+        const legalMovesMap: Map<Square, Square[]> = new Map();
+
+        for (const [fromSquare, possibleMoves] of pseudoLegalMovesMap) {
+            const legalTargets = possibleMoves.filter(toSquare =>
+                this.isLegalMove({ fromSquare, toSquare, rewindMove: true, updateMoveHistory: true })
+            );
+
+            if (legalTargets.length) legalMovesMap.set(fromSquare, legalTargets);
+        }
+
+        return legalMovesMap;
+    }
+
     public getMaterialAdvantage() {
         const pieces = this.getBoardPieces();
         const scoreMap = new Map<PieceType, number>([
