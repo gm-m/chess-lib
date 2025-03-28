@@ -11,6 +11,7 @@ import {
     charToPieceType,
     decodeEnum,
     decodePieceColor,
+    getCoordinates,
     getPieceColor,
     getSquareColor,
     isAlphabetCharacter,
@@ -92,6 +93,11 @@ export enum Square {
     h1,
     no_sq,
 }
+
+type Ranks = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8';
+type Files = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h';
+export type SquareDescription = `${Files}${Ranks}`;
+
 
 // Convert board square indexes to coordinates
 export const SQUARE_TO_COORDS = [
@@ -956,6 +962,18 @@ export class ChessBoard {
         });
 
         return pieces;
+    }
+
+    public getPieceSquares(pieceType: PieceType): SquareDescription[] {
+	    let coordinates: SquareDescription[] = [];
+
+	    this.iterateBoard((square: Square, piece: PieceType) => {
+		    if (piece === pieceType) {
+			    coordinates.push(getCoordinates(square));
+		    }
+	    });
+
+	    return coordinates;
     }
 
     public getFullMoveNumber(): number {

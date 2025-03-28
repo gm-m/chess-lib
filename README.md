@@ -110,6 +110,15 @@ chessBoard.getSquare(Square.e6); // { piece: 'e', color: 'b' }
 
 ```
 
+### .getPieceSquares(pieceType: PieceType)
+
+Returns an array representation of the squares where the requested piece is located.
+
+```ts
+const chessBoard = new ChessBoard({ fen: '8/8/1k6/3n4/7P/5PP1/6K1/8 w HAha - 0 1' });
+chessBoard.getPieceSquares(PieceType.WHITE_PAWN); // ["f3", "g4", "h4"];
+```
+
 ### .getBoardPieces()
 
 Returns an array representation of the pieces on the board.

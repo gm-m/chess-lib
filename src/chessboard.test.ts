@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { ChessBoard, SQUARE_TO_COORDS, Square } from './chessboard';
 import { PieceColor } from './enum/PieceColor';
+import { PieceType } from './piece/piece';
 
 describe.todo("Test getFullMoveNumber", () => {
     const chessboard = new ChessBoard();
@@ -33,6 +34,24 @@ describe("Test removePiece", () => {
     });
 });
 
+describe.only("Test getPieceSquares", () => {
+    const chessboard = new ChessBoard();
+    const testCases = [
+        { fen: '8/8/1k6/3n4/7P/5PP1/6K1/8 w HAha - 0 1', piece: PieceType.WHITE_PAWN, expectedOutput: ["h4", "f3", "g3"] },
+        { fen: '8/8/1k6/3n4/7P/5PP1/6K1/8 w HAha - 0 1', piece: PieceType.BLACK_KNIGHT, expectedOutput: ["d5"] },
+        
+        { fen: '8/8/1b6/3p2k1/2pP4/2P4b/4R2p/5K2 w - - 0 1', piece: PieceType.BLACK_PAWN, expectedOutput: ["d5", "c4", "h2"] },
+        { fen: '8/8/1b6/3p2k1/2pP4/2P4b/4R2p/5K2 w - - 0 1', piece: PieceType.BLACK_BISHOP, expectedOutput: ["h3", "b6"] },
+    ];
+
+    testCases.forEach(({ fen, piece, expectedOutput }) => {
+        test(`getPieceSquares(${fen}) should return ${expectedOutput}`, () => {
+            chessboard.loadFen(fen);
+            expect(chessboard.getPieceSquares(piece)).toEqual(expect.arrayContaining(expectedOutput));
+        });
+    });
+});
+
 describe("Test getSquare", () => {
     const chessboard = new ChessBoard();
     const testCases = [
@@ -50,7 +69,7 @@ describe("Test getSquare", () => {
     });
 });
 
-describe.only("Test getMaterialAdvantage", () => {
+describe("Test getMaterialAdvantage", () => {
     const chessboard = new ChessBoard();
     const testCases = [
         {

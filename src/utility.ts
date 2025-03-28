@@ -1,5 +1,5 @@
 import { BLACK_PIECES, PieceType, WHITE_PIECES } from "./piece/piece";
-import { ChessBoard, Square } from "./chessboard";
+import { ChessBoard, Square, SQUARE_TO_COORDS, SquareDescription } from "./chessboard";
 import { PieceColor } from "./enum/PieceColor";
 
 // isAlphabetCharacter = (ch) => ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z';
@@ -60,20 +60,23 @@ export function getPieceColor(square: Square): PieceColor | undefined {
 }
 
 export function getSquareColor(square: Square): PieceColor {
-    return (rank(square) + file(square)) % 2 === 0 ? PieceColor.WHITE : PieceColor.BLACK;
+    return (getRank(square) + getFile(square)) % 2 === 0 ? PieceColor.WHITE : PieceColor.BLACK;
 }
 
 // https://en.wikipedia.org/wiki/0x88#Algebraic_notation_and_conversion
 // Extracts the zero-based rank of an 0x88 square.
-function rank(square: number): number {
+function getRank(square: number): number {
     return square >> 4;
 }
 
 // Extracts the zero-based file of an 0x88 square.
-function file(square: number): number {
+function getFile(square: number): number {
     return square & 0xf;
 }
 
+export function getCoordinates(square: Square): SquareDescription {
+    return SQUARE_TO_COORDS[square] as SquareDescription;
+}
 
 export function prettyLog(message: string = "customLog") {
     const baseStyles = [
