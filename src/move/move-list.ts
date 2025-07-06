@@ -1,5 +1,6 @@
-import { SQUARE_TO_COORDS, Square } from "../chessboard";
-import { decodeEnum } from "../utility";
+import { SQUARE_TO_COORDS } from "../chessboard/chess-game";
+import { Square } from "../model/model";
+import { decodeEnum } from "../utils/utility";
 
 export class MoveList {
     counter: number = 0;

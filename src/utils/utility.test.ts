@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
-import { Square } from './chessboard';
 import { getSquareColor } from './utility';
-import { PieceColor } from './enum/PieceColor';
+import { Square } from '../model/model';
+import { PieceColor } from '../model/PieceColor.enum';
 
 describe("Test utility functions", () => {
     const testCases = [

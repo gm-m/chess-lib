@@ -1,7 +1,8 @@
-import { ChessBoard, Square } from "../chessboard";
-import { PieceColor } from "../enum/PieceColor";
+import { ChessGame } from "../chessboard/chess-game";
+import { Square } from "../model/model";
+import { PieceColor } from "../model/PieceColor.enum";
 import { BLACK_PROMOTION_PIECES, PieceBaseClass, PieceType, WHITE_PROMOTION_PIECES } from "../piece/piece";
-import { decodeEnum, getPieceColor } from "../utility";
+import { decodeEnum } from "../utils/utility";
 
 
 export interface EncodeMove {
@@ -47,7 +48,7 @@ export interface MakeMove {
 }
 
 export class MoveInvoker {
-    constructor(private chessboard: ChessBoard) { }
+    constructor(private chessGame: ChessGame) { }
 
     movesHistory: MoveHistory[] = [];
     undoMoveCounter: number = 0;
@@ -63,7 +64,7 @@ export class MoveInvoker {
 
         const lastMove = this.movesHistory.at(-1);
         if (lastMove) {
-            let lastMovePiece = ChessBoard.board[lastMove.toSquareIdx].toUpperCase();
+            let lastMovePiece = this.chessGame.boardState.getPiece(lastMove.toSquareIdx).toUpperCase();
             if (lastMovePiece === "P") {
                 lastMovePiece = '';
             }
@@ -85,7 +86,7 @@ export class MoveInvoker {
                 moveRappresentation = `${moveNumber}. ${moveRappresentation}`;
             }
 
-            this.chessboard.appendToPGN(moveRappresentation);
+            this.chessGame.appendToPGN(moveRappresentation);
         }
     }
 
@@ -127,28 +128,28 @@ export class MoveInvoker {
 
         const isUndoMove = move.rewindMove;
         if (!isUndoMove) {
-            const fromPieceColor = getPieceColor(move.fromSquare);
-            const isValidTurn = ChessBoard.side === fromPieceColor && fromPieceColor !== getPieceColor(move.toSquare);
+            const fromPieceColor = this.chessGame.boardState.getPieceColor(move.fromSquare);
+            const isValidTurn = this.chessGame.side === fromPieceColor && fromPieceColor !== this.chessGame.boardState.getPieceColor(move.toSquare);
 
             if (!isValidTurn) return;
         }
 
-        const fromSquarePiece = ChessBoard.board[move.fromSquare];
+        const fromSquarePiece = this.chessGame.boardState.getPiece(move.fromSquare);
         if (fromSquarePiece === PieceType.WHITE_KING || fromSquarePiece === PieceType.BLACK_KING) {
             this.updateKingSquares(fromSquarePiece, move.toSquare);
         }
 
         // Detect capture move
-        const isCaptureMove = ChessBoard.board[move.toSquare] !== PieceType.EMPTY;
-        const capturedPiece = isCaptureMove ? ChessBoard.board[move.toSquare] : undefined;
+        const isCaptureMove = this.chessGame.boardState.getPiece(move.toSquare) !== PieceType.EMPTY;
+        const capturedPiece = isCaptureMove ? this.chessGame.boardState.getPiece(move.toSquare) : undefined;
 
         // TODO
         const isCastlingMove = false;
 
         // Execute Move
-        ChessBoard.board[move.toSquare] = ChessBoard.board[move.fromSquare];
-        ChessBoard.board[move.fromSquare] = PieceType.EMPTY;
-        this.chessboard.increaseMoveNumber();
+        this.chessGame.boardState.setPiece(move.toSquare, this.chessGame.boardState.getPiece(move.fromSquare));
+        this.chessGame.boardState.setPiece(move.fromSquare, PieceType.EMPTY);
+        this.chessGame.increaseMoveNumber();
 
         // Update History
         if (!isUndoMove) {
@@ -164,11 +165,12 @@ export class MoveInvoker {
         }
 
         // Update state
-        this.chessboard.updateSideToMove();
-        this.chessboard.getAllLegalMoves();
+        this.chessGame.updateSideToMove();
+        this.chessGame.getAllLegalMoves();
 
         // TODO
-        // this.chessboard.isCheckmate();
+        // 1. this.chessGame.isCheckmate();
+        // 2. Return a boolean that indicates if the move it's been executed successfully
     }
 
     private updateKingSquares(fromSquarePieceType: PieceType, toSquare: Square) {
@@ -192,12 +194,13 @@ export class MoveInvoker {
     }
 
     isLegalMove(move: MakeMove) {
-        if (!ChessBoard.legalMoves.hasLegalMoves(move.fromSquare)) return false;
+        if (!this.chessGame.legalMoves.hasLegalMoves(move.fromSquare)) return false;
 
-        const legalMoves = ChessBoard.legalMoves.legalMovesMap.get(move.fromSquare)!;
+        const legalMoves = this.chessGame.legalMoves.legalMovesMap.get(move.fromSquare)!;
         return legalMoves.some((_move: Square) => _move === move.toSquare);
     }
 
+    // TODO: This method should work with imported PGN aswell.
     redoMove(quantity?: number) {
         console.group("Redo Move Fn");
         console.log("History", this.movesHistory);
@@ -229,6 +232,7 @@ export class MoveInvoker {
         - Remove from movesHistory
         - Update legal moves
     */
+    // TODO: This method should work with imported PGN aswell.
     undoMove(quantity?: number) {
         const movesToRewind: number = quantity ?? 1;
 
@@ -241,7 +245,7 @@ export class MoveInvoker {
             this.executeMove({ fromSquare: toSquare, toSquare: fromSquare, rewindMove: true, updateMoveHistory: true }); // TODO: updateMoveHistory -> false
 
             if (lastMove.isCaptureMove) {
-                ChessBoard.board[lastMove.toSquareIdx] = lastMove.capturedPiece!;
+                this.chessGame.boardState.setPiece(lastMove.toSquareIdx, lastMove.capturedPiece!);
             }
         }
     }

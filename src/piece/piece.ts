@@ -1,5 +1,6 @@
-import { ChessBoard, Square } from "../chessboard";
-import { PieceColor } from "../enum/PieceColor";
+import { ChessGame } from "../chessboard/chess-game";
+import { Square } from "../model/model";
+import { PieceColor } from "../model/PieceColor.enum";
 
 export enum PieceType {
     WHITE_PAWN = 'P',
@@ -34,7 +35,7 @@ export interface Piece {
 }
 
 export class PieceBaseClass implements Piece {
-    chessboard: ChessBoard = new ChessBoard();
+    chessGame: ChessGame = new ChessGame();
     color: PieceColor;
     coordinates: Square;
 

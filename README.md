@@ -14,7 +14,7 @@ Resets the board and imports the given FEN string.
 
 ### .loadPgn()
 
-Resets the chess board and imports a given PGN (Portable Game Notation) string. The method loads the FEN of the starting position from the PGN string, but does not import any subsequent moves.
+Resets the chess board and imports a given PGN (Portable Game Notation) string. For now, this method loads the FEN of the starting position from the PGN string, but does not import any subsequent moves. If the PGN string does not contain a FEN, the default starting position will be used.
 
 ```ts
 const chessBoard = new ChessBoard();

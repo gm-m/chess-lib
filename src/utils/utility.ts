@@ -1,6 +1,7 @@
-import { BLACK_PIECES, PieceType, WHITE_PIECES } from "./piece/piece";
-import { ChessBoard, Square, SQUARE_TO_COORDS, SquareDescription } from "./chessboard";
-import { PieceColor } from "./enum/PieceColor";
+import { SQUARE_TO_COORDS } from "../chessboard/chess-game";
+import { Square, SquareDescription } from "../model/model";
+import { PieceColor } from "../model/PieceColor.enum";
+import { PieceType } from "../piece/piece";
 
 // isAlphabetCharacter = (ch) => ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z';
 export const isAlphabetCharacter = (ch: string) => /^[A-Z]$/i.test(ch);
@@ -49,15 +50,6 @@ export function decodePieceColor(color: PieceColor): 'w' | 'b' {
     return color === 0 ? 'w' : 'b';
 }
 
-export function getPieceColor(square: Square): PieceColor | undefined {
-    if (WHITE_PIECES.includes(ChessBoard.board[square])) {
-        return PieceColor.WHITE;
-    }
-
-    if (BLACK_PIECES.includes(ChessBoard.board[square])) {
-        return PieceColor.BLACK;
-    }
-}
 
 export function getSquareColor(square: Square): PieceColor {
     return (getRank(square) + getFile(square)) % 2 === 0 ? PieceColor.WHITE : PieceColor.BLACK;
