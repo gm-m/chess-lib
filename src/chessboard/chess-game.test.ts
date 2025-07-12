@@ -190,6 +190,48 @@ describe("Test getBoardPieces", () => {
     });
 });
 
+describe.only("Test sideToMove", () => {
+    const chessGame = new ChessGame();
+    const testCases = [
+        {
+            fen: 'r4rk1/1pqb1pp1/1pn1p2p/8/4Q3/1NP2N2/PP3PPP/R2R2K1 w - - 0 17',
+            expectedOutput: PieceColor.WHITE
+        },
+        {
+            fen: '3rb1k1/1p3pp1/4p2p/2PqN3/8/P3Q2P/5PP1/2R3K1 w - - 1 32',
+            expectedOutput: PieceColor.WHITE
+        },
+
+        {
+            fen: 'r1bk3r/pp3ppp/2n2n2/2bp4/8/2N2N2/PP2PPPP/R2QKB1R w KQ - 0 9',
+            expectedOutput: PieceColor.WHITE
+        },
+        {
+            fen: 'r1bk3r/pp3ppp/2n2n2/2bp4/8/2N2N2/PP2PPPP/R2QKB1R b KQ - 0 9',
+            expectedOutput: PieceColor.BLACK
+        },
+        {
+            fen: '2krb3/b6r/p1p1Q3/4pp1N/2P4p/1R6/P3B1PP/7K b - - 0 27',
+            expectedOutput: PieceColor.BLACK
+        },
+        {
+            fen: '2krb3/b6r/p1p1Q3/4pp1N/2P4p/1R6/P3B1PP/7K b - - 0 27',
+            expectedOutput: PieceColor.BLACK
+        },
+        {
+            fen: '4R1k1/1rp1qpbp/1p3np1/1N2pbN1/1PP1n3/4B1P1/4PPBP/3Q1RK1 b - - 0 18',
+            expectedOutput: PieceColor.BLACK
+        },
+    ];
+
+    testCases.forEach(({ fen, expectedOutput }) => {
+        test(`sideToMove should return ${expectedOutput}`, () => {
+            chessGame.loadFen(fen);
+            expect(chessGame.side).toBe(expectedOutput);
+        });
+    });
+});
+
 describe("Test isLegalMove", () => {
     const chessGame = new ChessGame();
     const testCases = [
@@ -212,6 +254,11 @@ describe("Test isLegalMove", () => {
         {
             fen: '2krb3/b6r/p1p1Q3/4pp1N/2P4p/1R6/P3B1PP/7K b - - 0 27',
             move: { fromSquare: Square.d8, toSquare: Square.d6 },
+            expectedOutput: false
+        },
+        {
+            fen: '4R1k1/1rp1qpbp/1p3np1/1N2pbN1/1PP1n3/4B1P1/4PPBP/3Q1RK1 b - - 0 18',
+            move: { fromSquare: Square.e7, toSquare: Square.b4 },
             expectedOutput: false
         },
     ];
