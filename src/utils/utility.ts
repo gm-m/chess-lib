@@ -7,21 +7,6 @@ import { PieceType } from "../piece/piece";
 export const isAlphabetCharacter = (ch: string) => /^[A-Z]$/i.test(ch);
 export const isDigitCharacter = (ch: string) => ch >= '0' && ch <= '9';
 
-// export function stringIterator(str: string) {
-//     let index: number = 0;
-//     let iterator: IterableIterator<string> = str[Symbol.iterator]();
-//
-//     return {
-//         next() {
-//             index++;
-//             return iterator.next();
-//         },
-//         peek() {
-//             return str[index];
-//         }
-//     };
-// }
-
 export function charToPieceType(char: string): PieceType {
     const charToPieceMap: Map<string, PieceType> = new Map([
         ['P', PieceType.WHITE_PAWN],
@@ -41,9 +26,8 @@ export function charToPieceType(char: string): PieceType {
     return charToPieceMap.get(char) ?? PieceType.EMPTY;
 }
 
-export function decodeEnum(el: any) {
-    const match = Object.entries(Square).find(([_, value]) => value === el);
-    return match ? match[0] : undefined;
+export function squareToString(square: Square): keyof typeof Square {
+    return Square[square] as keyof typeof Square;
 }
 
 export function decodePieceColor(color: PieceColor): 'w' | 'b' {

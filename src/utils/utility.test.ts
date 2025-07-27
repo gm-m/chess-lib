@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { getSquareColor } from './utility';
+import { getSquareColor, squareToString } from './utility';
 import { Square } from '../model/model';
 import { PieceColor } from '../model/PieceColor.enum';
 
@@ -31,3 +31,27 @@ describe("Test utility functions", () => {
     });
 });
 
+describe("Test squareToString", () => {
+    const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+    const ranks = ['8', '7', '6', '5', '4', '3', '2', '1']; // Correct order from 8 to 1
+    
+    const testCases = [];
+    for (let rank = 0; rank < 8; rank++) {
+        for (let file = 0; file < 8; file++) {
+            const squareIndex = rank * 16 + file; // 0x88 board representation
+            const expected = `${files[file]}${ranks[rank]}`;
+            testCases.push({ square: squareIndex, expected });
+        }
+    }
+
+    test.each(testCases)(
+        'squareToString($square) should return "$expected"',
+        ({ square, expected }) => {
+            expect(squareToString(square)).toEqual(expected);
+        }
+    );
+
+    test('squareToString(Square.no_sq) should return no_sq', () => {
+        expect(squareToString(Square.no_sq)).toEqual('no_sq');
+    });
+});

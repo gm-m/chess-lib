@@ -1,6 +1,6 @@
 import { SQUARE_TO_COORDS } from "../chessboard/chess-game";
 import { Square } from "../model/model";
-import { decodeEnum } from "../utils/utility";
+import { squareToString } from "../utils/utility";
 
 export class MoveList {
     counter: number = 0;
@@ -103,7 +103,7 @@ export class MoveList {
             return;
         }
 
-        return [...this.legalMovesMap.values()].flat().map(el => decodeEnum(el));
+                return [...this.legalMovesMap.values()].flat().map(el => squareToString(el));
     }
 
     public printMoves() {

@@ -9,7 +9,7 @@ import { MoveGenerator } from '../move-generation/move-generator';
 import { BoardPresenter } from "../core/board-presenter";
 import {
     charToPieceType,
-    decodeEnum,
+    squareToString,
     decodePieceColor,
     getCoordinates,
     getSquareColor,
@@ -507,7 +507,7 @@ export class ChessGame {
     }
 
     public getHistory() {
-        return this.moveInvoker.movesHistory.map((move) => decodeEnum(move.toSquareIdx));
+        return this.moveInvoker.movesHistory.map((move) => squareToString(move.toSquareIdx));
     }
 
     public clear() {

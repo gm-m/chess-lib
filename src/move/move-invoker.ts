@@ -2,7 +2,7 @@ import { ChessGame } from "../chessboard/chess-game";
 import { Square } from "../model/model";
 import { PieceColor } from "../model/PieceColor.enum";
 import { BLACK_PROMOTION_PIECES, PieceBaseClass, PieceType, WHITE_PROMOTION_PIECES } from "../piece/piece";
-import { decodeEnum } from "../utils/utility";
+import { squareToString } from "../utils/utility";
 
 
 export interface EncodeMove {
@@ -70,12 +70,12 @@ export class MoveInvoker {
             }
             const captureMove = lastMove.isCaptureMove ? "x" : "";
 
-            const lastMoveStr = `${decodeEnum(lastMove.fromSquareIdx)}, ${decodeEnum(lastMove.toSquareIdx)}`;
+            const lastMoveStr = `${squareToString(lastMove.fromSquareIdx)}, ${squareToString(lastMove.toSquareIdx)}`;
             this.domHistory.push(lastMoveStr);
 
             this.isHalfMove = this.domHistory.length % 2 === 0;
 
-            let moveRappresentation = `${lastMovePiece}${captureMove}${decodeEnum(lastMove.toSquareIdx)}`;
+            let moveRappresentation = `${lastMovePiece}${captureMove}${squareToString(lastMove.toSquareIdx)}`;
             if (this.isHalfMove) {
                 moveRappresentation = ` ${moveRappresentation}`;
 
