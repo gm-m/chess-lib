@@ -1,13 +1,12 @@
 import { Square } from "../model/model";
 import { PieceColor } from "../model/PieceColor.enum";
 import { MoveGenerator } from "../move-generation/move-generator";
-import { MoveInvoker } from "../move/move-invoker";
 import { PieceBaseClass, PieceType } from "../piece/piece";
 import { getSquareColor } from "../utils/utility";
 import { Board } from "./board";
 
 export class GameStateEvaluator {
-    public isCheckmate(sideToMove: PieceColor, moveGenerator: MoveGenerator, moveInvoker: MoveInvoker): boolean {
+    public isCheckmate(sideToMove: PieceColor, moveGenerator: MoveGenerator): boolean {
         const kingSquare = PieceBaseClass.KING_SQUARES[sideToMove];
         const opponentColor = sideToMove === PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
 
@@ -16,14 +15,26 @@ export class GameStateEvaluator {
         }
 
         const legalMoveList = moveGenerator.generateMoves(this.boardState, sideToMove);
-
         for (const [fromSquare, toSquares] of legalMoveList.legalMovesMap) {
             for (const toSquare of toSquares) {
-                moveInvoker.executeMove({ fromSquare, toSquare, updateMoveHistory: true });
+                const originalPiece = this.boardState.getPiece(fromSquare);
+                const capturedPiece = this.boardState.getPiece(toSquare);
+
+                // Simulate the move
+                this.boardState.setPiece(toSquare, originalPiece);
+                this.boardState.setPiece(fromSquare, PieceType.EMPTY);
+                if (originalPiece === PieceType.WHITE_KING || originalPiece === PieceType.BLACK_KING) {
+                    PieceBaseClass.KING_SQUARES[sideToMove] = toSquare;
+                }
 
                 const isKingStillInCheck = this.isSquareAttacked(PieceBaseClass.KING_SQUARES[sideToMove], opponentColor);
 
-                moveInvoker.undoMove();
+                // Undo the move
+                this.boardState.setPiece(fromSquare, originalPiece);
+                this.boardState.setPiece(toSquare, capturedPiece);
+                if (originalPiece === PieceType.WHITE_KING || originalPiece === PieceType.BLACK_KING) {
+                    PieceBaseClass.KING_SQUARES[sideToMove] = fromSquare;
+                }
 
                 if (!isKingStillInCheck) {
                     return false; // Found a move to escape check, so not checkmate

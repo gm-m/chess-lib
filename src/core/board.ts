@@ -2,7 +2,7 @@ import { SQUARE_TO_COORDS } from "../chessboard/chess-game";
 import { BoardPiece, Square } from "../model/model";
 import { PieceColor } from "../model/PieceColor.enum";
 import { BLACK_PIECES, PieceType, WHITE_PIECES } from "../piece/piece";
-import { decodePieceColor, getSquareColor } from "../utils/utility";
+import { decodePieceColor } from "../utils/utility";
 
 export class Board {
     private board: PieceType[] = [
@@ -168,17 +168,16 @@ export class Board {
     getAllPieceOfColor(color: PieceColor) {
 	    const filterByColor = color === PieceColor.WHITE ? 'w' : 'b';
 	    const allPieces = this.getBoardPieces();
-	    const filteredPieces =  allPieces.filter((piece) => piece.color === filterByColor );
+	    const filteredPieces =  allPieces.filter((piece) => piece.color === filterByColor);
         
 	    return filteredPieces;
     }
 
     // Intended to be used internally, it returns the usual rappresentation of Square and Color
     _getAllPieceOfColor(color: PieceColor) {
-	    // let pieces: {square: number, color: PieceColor} = [];
-	    let pieces: any[] = [];
+        let pieces: { square: number, color: PieceColor; }[] = [];
 	    this.iterateBoard((square: number) => {
-		    if(color === getSquareColor(square)){
+		    if(color === this.getPieceColor(square)){
 			    pieces.push({square, color});
 		    }
 	    });

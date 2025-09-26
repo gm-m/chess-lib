@@ -237,16 +237,24 @@ export class MoveInvoker {
         const movesToRewind: number = quantity ?? 1;
 
         for (let index = 0; index < movesToRewind; index++) {
-            const lastMove = this.movesHistory[this.movesHistory.length - (this.undoMoveCounter + 1)];
+            const lastMove = this.movesHistory.pop();
             if (!lastMove) return;
 
-            this.undoMoveCounter++;
-            const { fromSquareIdx: fromSquare, toSquareIdx: toSquare } = lastMove;
-            this.executeMove({ fromSquare: toSquare, toSquare: fromSquare, rewindMove: true, updateMoveHistory: true }); // TODO: updateMoveHistory -> false
+            const { fromSquareIdx, toSquareIdx, capturedPiece } = lastMove;
 
-            if (lastMove.isCaptureMove) {
-                this.chessGame.boardState.setPiece(lastMove.toSquareIdx, lastMove.capturedPiece!);
+            // Move the piece back
+            const movedPiece = this.chessGame.boardState.getPiece(toSquareIdx);
+            this.chessGame.boardState.setPiece(fromSquareIdx, movedPiece);
+
+            // Restore the captured piece, or clear the square
+            this.chessGame.boardState.setPiece(toSquareIdx, capturedPiece || PieceType.EMPTY);
+
+            // If the moved piece was a king, restore its original square
+            if (movedPiece === PieceType.WHITE_KING || movedPiece === PieceType.BLACK_KING) {
+                this.updateKingSquares(movedPiece, fromSquareIdx);
             }
+
+            this.chessGame.updateSideToMove();
         }
     }
 

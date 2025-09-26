@@ -190,7 +190,7 @@ describe("Test getBoardPieces", () => {
     });
 });
 
-describe.only("Test sideToMove", () => {
+describe("Test sideToMove", () => {
     const chessGame = new ChessGame();
     const testCases = [
         {
@@ -271,28 +271,6 @@ describe("Test isLegalMove", () => {
     });
 });
 
-// TODO: Merge with the test below
-describe.skip("Test filterIllegalMoves", () => {
-    const chessGame = new ChessGame();
-    const testCases = [
-        {
-            fen: '2krb3/b6r/p1p1Q3/4pp1N/2P4p/1R6/P3B1PP/7K b - - 0 27',
-            square: Square.d8
-        },
-    ];
-
-    testCases.forEach(({ fen, square }) => {
-        test(`filter illegalMoves from square: (${square}) should return`, () => {
-            chessGame.loadFen(fen);
-            const pseudoLegalMoves = chessGame.moveGenerator.generateMoves(chessGame.boardState, chessGame.side, chessGame.enpassant);
-            // const legalMoves = chessboard.filter
-            console.log("pseudoLegalMoves: ", pseudoLegalMoves);
-
-            expect(pseudoLegalMoves).toBeTruthy();
-        });
-    });
-});
-
 describe.skip("Test filterIllegalMoves", () => {
     const chessGame = new ChessGame();
     const testCases = [
@@ -313,6 +291,15 @@ describe.skip("Test filterIllegalMoves", () => {
             expectedOutput: new Map([
                 [Square.h8, [Square.h7, Square.g8]],
                 [Square.g6, [Square.f7]]
+            ])
+        },
+        {
+            fen: '2krb3/b6r/p1p1Q3/4pp1N/2P4p/1R6/P3B1PP/7K b - - 0 27',
+            expectedOutput: new Map([
+                [Square.e8, [Square.d7]],
+                [Square.c8, [Square.c7]],
+                [Square.d8, [Square.d7]],
+                [Square.h7, [Square.d7]]
             ])
         },
     ];

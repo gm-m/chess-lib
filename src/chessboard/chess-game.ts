@@ -209,7 +209,7 @@ export class ChessGame {
         - Undo Move: If the move doesn’t resolve the check, it undoes the move using this.undoMove().
     */
     public isCheckmate(): boolean {
-        return this.boardEvaluator.isCheckmate(this.side, this.moveGenerator, this.moveInvoker);
+        return this.boardEvaluator.isCheckmate(this.side, this.moveGenerator);
     }
 
     public isStaleMate(): boolean {
@@ -240,7 +240,6 @@ export class ChessGame {
     }
 
 
-
     getFen() {
         let fen = '';
 
@@ -256,7 +255,7 @@ export class ChessGame {
                     const piece = this.boardState.getPiece(square);
 
                     if (piece === PieceType.EMPTY) {
-                        emptySquares++;
+                       emptySquares++;
                     } else {
                         if (emptySquares > 0) fen += emptySquares;
                         fen += piece;
@@ -303,10 +302,10 @@ export class ChessGame {
                     if (isAlphabetCharacter(nextFenChar)) {
                         if (nextFenChar === PieceType.WHITE_KING) {
                             PieceBaseClass.KING_SQUARES[PieceColor.WHITE] = square;
-                            console.log("KING_SQUARES:", PieceBaseClass.KING_SQUARES);
+                            // console.log("KING_SQUARES:", PieceBaseClass.KING_SQUARES);
                         } else if (nextFenChar === PieceType.BLACK_KING) {
                             PieceBaseClass.KING_SQUARES[PieceColor.BLACK] = square;
-                            console.log("KING_SQUARES:", PieceBaseClass.KING_SQUARES);
+                            // console.log("KING_SQUARES:", PieceBaseClass.KING_SQUARES);
                         }
 
                         // Set the piece on board
@@ -338,14 +337,14 @@ export class ChessGame {
             }
         }
 
-        console.group("Fen Analisys");
+        // console.group("Fen Analisys");
         nextFenChar = fenIterator.next().value || '';
         this.side = nextFenChar === 'w' ? PieceColor.WHITE : PieceColor.BLACK;
-        console.log("Player:", this.side === PieceColor.WHITE ? "White" : "Black");
+        // console.log("Player:", this.side === PieceColor.WHITE ? "White" : "Black");
 
         nextFenChar = fenIterator.next().value || ''; // Move to the character after side to move
         nextFenChar = fenIterator.next().value || ''; // and the space after
-        console.log("Fen After Side To Move: ", nextFenChar);
+        // console.log("Fen After Side To Move: ", nextFenChar);
         // console.log("Next Char Val: ", nextFenChar);
 
         // Castling rights
@@ -378,9 +377,9 @@ export class ChessGame {
         }
 
 
-        console.log("Enpassant: ", this.enpassant);
-        console.log("Pieces on board:", this.totalPieces);
-        console.groupEnd();
+        // console.log("Enpassant: ", this.enpassant);
+        // console.log("Pieces on board:", this.totalPieces);
+        // console.groupEnd();
 
         this.getAllLegalMoves();
     }

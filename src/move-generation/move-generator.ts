@@ -18,8 +18,8 @@ export class MoveGenerator {
         const moveList = new MoveList();
         const evaluator = new GameStateEvaluator(board);
 
-        for (const fromSquare of board._getAllPieceOfColor(sideToMove)) {
-            this.generateMovesFromSquare(fromSquare, board, moveList, enpassant, evaluator);
+        for (const piece of board._getAllPieceOfColor(sideToMove)) {
+            this.generateMovesFromSquare(piece.square, board, moveList, enpassant, evaluator);
         }
 
         return moveList;
