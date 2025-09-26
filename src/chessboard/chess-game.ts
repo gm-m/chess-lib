@@ -446,14 +446,15 @@ export class ChessGame {
     }
 
     public isLegalMove(move: MakeMove) {
-        debugger;
+        const pieceColor = this.boardState.getPieceColor(move.fromSquare);
         const currentSideToMove = this.side;
+        if (pieceColor !== currentSideToMove) return false;
 
         this.movePiece(move);
-        const isInCheck = this.isInCheck(currentSideToMove) === false;
+        const isKingInCheck = this.isInCheck(currentSideToMove);
         this.undoMove();
 
-        return !isInCheck;
+        return !isKingInCheck;
     }
 
     // TODO: Rename to filterIllegalMoves
