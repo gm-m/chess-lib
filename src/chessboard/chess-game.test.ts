@@ -20,6 +20,21 @@ describe.todo("Test getFullMoveNumber", () => {
     });
 });
 
+describe.only("Test getFen", () => {
+    const chessGame = new ChessGame();
+    const testCases = [
+        { fen: 'r3r1k1/p2qppbp/1n4p1/3b4/1QpP3B/4PN2/P3BPPP/1RR3K1 b - - 8 17' },
+        { fen: '4r1k1/b2N4/p1p1r2p/2Pp4/P4P2/2P3P1/7P/1R3R1K b - - 3 32' },
+    ];
+
+    testCases.forEach(({ fen }, index) => {
+        test(`getFen for testCase with index: ${index}`, () => {
+            chessGame.loadFen(fen);
+            expect(chessGame.getFen()).toEqual(fen);
+        });
+    });
+});
+
 describe("Test removePiece", () => {
     const chessGame = new ChessGame();
     const testCases = [

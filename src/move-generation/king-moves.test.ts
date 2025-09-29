@@ -53,7 +53,7 @@ describe("Test King Moves", () => {
         });
     });
 
-    test('castling moves', () => {
+    test('white with castling moves', () => {
         chessGame.loadFen("rn2kb1r/ppp1pppp/5n2/q7/6b1/2N2N2/PPPPBPPP/R1BQK2R w KQkq - 6 6");
 
         const moveList = new MoveList();
@@ -72,6 +72,66 @@ describe("Test King Moves", () => {
             expect(decodedLegalMoves).toContain(expectMove);
         });
     });
+
+    test('white with no castling king side moves', () => {
+        chessGame.loadFen("rn2kb1r/ppp1pppp/5n2/q7/6b1/2N2N2/PPPPBPPP/R1BQK2R w - - 6 6");
+
+        const moveList = new MoveList();
+        generateKingMoves(
+            Square.e1,
+            PieceColor.WHITE,
+            chessGame.boardState,
+            chessGame.boardEvaluator,
+            moveList
+        );
+        const expectedLegalMoves = ['f1'];
+        const decodedLegalMoves = moveList.decodeLegalMoves();
+
+        expect(decodedLegalMoves).toHaveLength(expectedLegalMoves.length);
+        expectedLegalMoves.forEach(expectMove => {
+            expect(decodedLegalMoves).toContain(expectMove);
+        });
+    });
+
+    test('black with castling moves', () => {
+        chessGame.loadFen("r3kb1r/pppppppp/2n2n2/q7/6b1/2N2N2/PPPPBPPP/R1BQK2R b kq - 7 7");
+
+        const moveList = new MoveList();
+        generateKingMoves(
+            Square.e8,
+            PieceColor.BLACK,
+            chessGame.boardState,
+            chessGame.boardEvaluator,
+            moveList
+        );
+        const expectedLegalMoves = ['d8', 'c8'];
+        const decodedLegalMoves = moveList.decodeLegalMoves();
+
+        expect(decodedLegalMoves).toHaveLength(expectedLegalMoves.length);
+        expectedLegalMoves.forEach(expectMove => {
+            expect(decodedLegalMoves).toContain(expectMove);
+        });
+    });
+
+    // test('black with no castling king side moves', () => {
+    //     chessGame.loadFen("r3kb1r/ppp1pppp/2n2n2/q7/6b1/2N2N2/PPPPBPPP/R1BQK2R b - - 7 7");
+
+    //     const moveList = new MoveList();
+    //     generateKingMoves(
+    //         Square.e8,
+    //         PieceColor.BLACK,
+    //         chessGame.boardState,
+    //         chessGame.boardEvaluator,
+    //         moveList
+    //     );
+    //     const expectedLegalMoves = ['f1'];
+    //     const decodedLegalMoves = moveList.decodeLegalMoves();
+
+    //     expect(decodedLegalMoves).toHaveLength(expectedLegalMoves.length);
+    //     expectedLegalMoves.forEach(expectMove => {
+    //         expect(decodedLegalMoves).toContain(expectMove);
+    //     });
+    // });
 
 
 });

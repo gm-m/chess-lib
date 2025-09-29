@@ -27,31 +27,17 @@ export function generateKnightMoves(
                 const hitsOpponentWhitePiece: boolean = color === PieceColor.WHITE && BLACK_PIECES.includes(targetPiece);
                 const hitsOpponentBlackPiece: boolean = color === PieceColor.BLACK && WHITE_PIECES.includes(targetPiece);
                 if (hitsOpponentWhitePiece || hitsOpponentBlackPiece || targetPiece === PieceType.EMPTY) {
-                    if (targetPiece === PieceType.EMPTY) {
-                        moveList.add(
-                            encodeMove({
-                                source: coordinates,
-                                targetSquare: targetSquare,
-                                piece: 0,
-                                capture: true,
-                                pawn: false,
-                                enpassant: false,
-                                castling: false,
-                            })
-                        );
-                    } else {
-                        moveList.add(
-                            encodeMove({
-                                source: coordinates,
-                                targetSquare: targetSquare,
-                                piece: 0,
-                                capture: false,
-                                pawn: false,
-                                enpassant: false,
-                                castling: false,
-                            })
-                        );
-                    }
+                    moveList.add(
+                        encodeMove({
+                            source: coordinates,
+                            targetSquare: targetSquare,
+                            piece: 0,
+                            capture: targetPiece !== PieceType.EMPTY,
+                            pawn: false,
+                            enpassant: false,
+                            castling: false,
+                        })
+                    );
                 }
             }
         }

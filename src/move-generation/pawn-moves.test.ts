@@ -61,7 +61,7 @@ describe("Pawn Moves", () => {
             fen: "rn1qk2r/ppp2pbp/3p1np1/1B2p3/4P1b1/2NP1N2/PPPB1PPP/R2Q1RK1 b Qkq - 0 1",
             square: Square.d6,
             color: PieceColor.BLACK,
-            expectedMoves: null
+            expectedMoves: ['d5']
         }
     ];
 
