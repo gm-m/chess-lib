@@ -14,7 +14,9 @@ import {
     getCoordinates,
     getSquareColor,
     isAlphabetCharacter,
-    isDigitCharacter
+    isDigitCharacter,
+    stringIterator,
+    isWhiteSpace,
 } from "../utils/utility";
 
 
@@ -239,6 +241,12 @@ export class ChessGame {
         return this.isCheckmate() || this.isDraw();
     }
 
+    // TODO
+    private getCastlingRights(){
+        // const isKingSideCastlingAvailable: number = PieceBaseClass.CASTLE & (color === PieceColor.WHITE ? Castling.KC : Castling.kc);
+        return '-'
+    }
+
 
     getFen() {
         let fen = '';
@@ -274,6 +282,9 @@ export class ChessGame {
         // Append side to move
         fen += ' ' + decodePieceColor(this.side);
 
+        // Append castling
+        fen += ' ' + this.getCastlingRights();
+
         // Append enpassant
         if (this.enpassant === false) fen += ' -';
 
@@ -281,16 +292,17 @@ export class ChessGame {
         fen += ` ${this.halfMoveNumber}`;
         fen += ` ${this.fullMoveNumber || 1}`;
 
-        // TODO: Castling
-
         return fen;
     }
 
     public loadFen(fen: string) {
         this.resetBoard();
 
-        let fenIterator = fen[Symbol.iterator]();
-        let nextFenChar: string = fenIterator.next().value || '';
+        console.log("FEN: ", fen);
+
+        // PIECES
+        const fenIterator = stringIterator(fen);
+        let nextFenChar: string = fenIterator.next().value;
         for (let rank = 0; rank < 8; rank++) {
             let file: number = 0;
 
@@ -311,7 +323,7 @@ export class ChessGame {
                         // Set the piece on board
                         this.boardState.setPiece(square, charToPieceType(nextFenChar));
                         ++this.totalPieces;
-                        nextFenChar = fenIterator.next().value || '';
+                        nextFenChar = fenIterator.next().value;
                     }
 
                     // Match empty squares
@@ -324,12 +336,12 @@ export class ChessGame {
                         // Skip empty squares
                         file += parseInt(nextFenChar);
 
-                        nextFenChar = fenIterator.next().value || '';
+                        nextFenChar = fenIterator.next().value;
                     }
 
                     // Match end of rank
                     if (nextFenChar === '/') {
-                        nextFenChar = fenIterator.next().value || '';
+                        nextFenChar = fenIterator.next().value;
                     }
                 }
 
@@ -338,12 +350,15 @@ export class ChessGame {
         }
 
         // console.group("Fen Analisys");
-        nextFenChar = fenIterator.next().value || '';
+
+        // COLOR
+        nextFenChar = fenIterator.next().value;
         this.side = nextFenChar === 'w' ? PieceColor.WHITE : PieceColor.BLACK;
         // console.log("Player:", this.side === PieceColor.WHITE ? "White" : "Black");
 
-        nextFenChar = fenIterator.next().value || ''; // Move to the character after side to move
-        nextFenChar = fenIterator.next().value || ''; // and the space after
+        nextFenChar = fenIterator.next().value; // Move to the character after side to move
+        nextFenChar = fenIterator.next().value; // and the space after
+
         // console.log("Fen After Side To Move: ", nextFenChar);
         // console.log("Next Char Val: ", nextFenChar);
 
@@ -357,15 +372,15 @@ export class ChessGame {
                     case 'q': PieceBaseClass.CASTLE |= Castling.qc; break;
                     default: break;
                 }
-                nextFenChar = fenIterator.next().value || '';
+                nextFenChar = fenIterator.next().value;
             }
         } else {
             // Skip the '-'
-            nextFenChar = fenIterator.next().value || '';
+            nextFenChar = fenIterator.next().value;
         }
 
         // Skip the space after castling rights
-        nextFenChar = fenIterator.next().value || '';
+        nextFenChar = fenIterator.next().value;
 
         // En-passant square
         if (nextFenChar !== '-') {
@@ -376,10 +391,23 @@ export class ChessGame {
             this.enpassant = false;
         }
 
+        // Skip the space
+        nextFenChar = fenIterator.nextWhile(isWhiteSpace).value;
+        let halfMoves = '';
+        while (nextFenChar && !isWhiteSpace(nextFenChar)) {
+            halfMoves = halfMoves + nextFenChar;
+            nextFenChar = fenIterator.next().value;
+        }
+        this.halfMoveNumber = Number(halfMoves);
 
-        // console.log("Enpassant: ", this.enpassant);
-        // console.log("Pieces on board:", this.totalPieces);
-        // console.groupEnd();
+        // Skip the space
+        nextFenChar = fenIterator.nextWhile(isWhiteSpace).value;
+        let fullMoves = '';
+        while (nextFenChar && !isWhiteSpace(nextFenChar)) {
+            fullMoves = fullMoves + nextFenChar;
+            nextFenChar = fenIterator.next().value;
+        }
+        this.fullMoveNumber = Number(fullMoves);
 
         this.getAllLegalMoves();
     }

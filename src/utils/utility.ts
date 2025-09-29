@@ -3,9 +3,31 @@ import { Square, SquareDescription } from "../model/model";
 import { PieceColor } from "../model/PieceColor.enum";
 import { PieceType } from "../piece/piece";
 
+export function stringIterator(str: string, fallbackValue = undefined) {
+    return {
+        length: str.length,
+        index: 0,
+        next: function () {
+            const value = str[this.index] ?? fallbackValue;
+            const done = this.index >= this.length;
+            this.index++;
+
+            return { value, done };
+        },
+        nextWhile: function (predicate: (char: string) => boolean) {
+            while (this.index < this.length && predicate(str[this.index])) {
+                this.index++;
+            }
+
+            return this.next();
+        },
+    };
+}
+
 // isAlphabetCharacter = (ch) => ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z';
 export const isAlphabetCharacter = (ch: string) => /^[A-Z]$/i.test(ch);
 export const isDigitCharacter = (ch: string) => ch >= '0' && ch <= '9';
+export const isWhiteSpace = (ch: string) => ch === ' ' || ch === '';
 
 export function charToPieceType(char: string): PieceType {
     const charToPieceMap: Map<string, PieceType> = new Map([
