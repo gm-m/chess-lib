@@ -1,5 +1,6 @@
 import { Board } from '../core/board';
 import { GameStateEvaluator } from '../core/game-state-evaluator';
+import { Castling } from '../model/model';
 import { PieceColor } from '../model/PieceColor.enum';
 import { MoveList } from '../move/move-list';
 import { PieceType } from '../piece/piece';
@@ -14,12 +15,12 @@ export class MoveGenerator {
      * The main public method. It iterates the board and calls the
      * appropriate helper function for each piece.
      */
-    public generateMoves(board: Board, sideToMove: PieceColor, enpassant: number | boolean = false): MoveList {
+    public generateMoves(board: Board, sideToMove: PieceColor, enpassant: number | boolean = false, castlingRights: number = 0): MoveList {
         const moveList = new MoveList();
         const evaluator = new GameStateEvaluator(board);
 
         for (const piece of board._getAllPieceOfColor(sideToMove)) {
-            this.generateMovesFromSquare(piece.square, board, moveList, enpassant, evaluator);
+            this.generateMovesFromSquare(piece.square, board, moveList, enpassant, evaluator, castlingRights);
         }
 
         return moveList;
@@ -27,9 +28,9 @@ export class MoveGenerator {
 
     /**
      * Generates all legal moves for a piece at the given square.
-          * This replaces a similar method from the old ChessBoard class.
+     * This replaces a similar method from the old ChessBoard class.
      */
-    public generateMovesFromSquare(fromSquare: number, board: Board, moveList: MoveList, enpassant: number | boolean = false, evaluator?: GameStateEvaluator): void {
+    public generateMovesFromSquare(fromSquare: number, board: Board, moveList: MoveList, enpassant: number | boolean = false, evaluator?: GameStateEvaluator, castlingRights: number = 0): void {
         const piece = board.getPiece(fromSquare);
         if (piece === PieceType.EMPTY) return;
 
@@ -61,7 +62,7 @@ export class MoveGenerator {
                 break;
             case PieceType.WHITE_KING:
             case PieceType.BLACK_KING:
-                generateKingMoves(fromSquare, pieceColor, board, gameEvaluator, moveList);
+                generateKingMoves(fromSquare, pieceColor, board, gameEvaluator, moveList, castlingRights as Castling);
                 break;
         }
     }

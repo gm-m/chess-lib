@@ -1,7 +1,7 @@
 import { ChessGame } from "../chessboard/chess-game";
 import { Square } from "../model/model";
 import { PieceColor } from "../model/PieceColor.enum";
-import { BLACK_PROMOTION_PIECES, PieceBaseClass, PieceType, WHITE_PROMOTION_PIECES } from "../piece/piece";
+import { BLACK_PROMOTION_PIECES, PieceType, WHITE_PROMOTION_PIECES } from "../piece/piece";
 import { squareToString } from "../utils/utility";
 
 
@@ -161,12 +161,12 @@ export class MoveInvoker {
                 capturedPiece
             });
             this.updateChessNotation();
-            console.log('Updated History: ', this.movesHistory);
+            // console.log('Updated History: ', this.movesHistory);
         }
 
         // Update state
-        this.chessGame.updateSideToMove();
-        this.chessGame.getAllLegalMoves();
+        // this.chessGame.updateSideToMove();
+        // this.chessGame.getAllLegalMoves();
 
         // TODO
         // 1. this.chessGame.isCheckmate();
@@ -175,9 +175,9 @@ export class MoveInvoker {
 
     private updateKingSquares(fromSquarePieceType: PieceType, toSquare: Square) {
         if (fromSquarePieceType === PieceType.WHITE_KING) {
-            PieceBaseClass.KING_SQUARES[PieceColor.WHITE] = toSquare;
+            this.chessGame.kingSquares[PieceColor.WHITE] = toSquare;
         } else if (fromSquarePieceType === PieceType.BLACK_KING) {
-            PieceBaseClass.KING_SQUARES[PieceColor.BLACK] = toSquare;
+            this.chessGame.kingSquares[PieceColor.BLACK] = toSquare;
         }
     }
 

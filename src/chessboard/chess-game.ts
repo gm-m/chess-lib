@@ -4,7 +4,7 @@ import { PieceColor } from "../model/PieceColor.enum";
 import { BoardPiece, Castling, InitBoard, Square, SquareDescription } from "../model/model";
 import { MakeMove, MoveInvoker } from "../move/move-invoker";
 import { MoveList } from "../move/move-list";
-import { PieceBaseClass, PieceType } from "../piece/piece";
+import { PieceType } from "../piece/piece";
 import { MoveGenerator } from '../move-generation/move-generator';
 import { BoardPresenter } from "../core/board-presenter";
 import {
@@ -94,6 +94,8 @@ export class ChessGame {
     boardPresenter: BoardPresenter;
 
     side: PieceColor = PieceColor.WHITE;
+    kingSquares: [Square, Square] = [Square.e1, Square.e8];
+    castlingRights: number = 0;
 
     // Board State
     enpassant: Square | boolean = false;
@@ -135,6 +137,8 @@ export class ChessGame {
 
     resetBoard() {
         this.totalPieces = 0;
+        this.castlingRights = 0;
+        this.kingSquares = [Square.e1, Square.e8];
         this.iterateBoard((square: Square) => this.boardState.setPiece(square, PieceType.EMPTY));
     }
 
@@ -204,7 +208,7 @@ export class ChessGame {
     }
 
     public isInCheck(side: PieceColor = this.side): boolean {
-        return this.boardEvaluator.isSquareAttacked(PieceBaseClass.KING_SQUARES[side], this.getOppositeSideColor(side));
+        return this.boardEvaluator.isSquareAttacked(this.kingSquares[side], this.getOppositeSideColor(side));
     }
 
     /*
@@ -215,11 +219,11 @@ export class ChessGame {
         - Undo Move: If the move doesn’t resolve the check, it undoes the move using this.undoMove().
     */
     public isCheckmate(): boolean {
-        return this.boardEvaluator.isCheckmate(this.side, this.moveGenerator);
+        return this.boardEvaluator.isCheckmate(this.side, this.moveGenerator, [...this.kingSquares], this.castlingRights);
     }
 
     public isStaleMate(): boolean {
-        return this.boardEvaluator.isStaleMate(this.side, this.moveGenerator);
+        return this.boardEvaluator.isStaleMate(this.side, this.moveGenerator, [...this.kingSquares], this.castlingRights);
     }
 
     // Combinations with insufficient material to checkmate include:
@@ -247,8 +251,14 @@ export class ChessGame {
 
     // TODO
     private getCastlingRights(){
-        // const isKingSideCastlingAvailable: number = PieceBaseClass.CASTLE & (color === PieceColor.WHITE ? Castling.KC : Castling.kc);
-        return '-'
+        let rights = '';
+
+        if (this.castlingRights & Castling.KC) rights += 'K';
+        if (this.castlingRights & Castling.QC) rights += 'Q';
+        if (this.castlingRights & Castling.kc) rights += 'k';
+        if (this.castlingRights & Castling.qc) rights += 'q';
+
+        return rights || '-'
     }
 
 
@@ -315,11 +325,9 @@ export class ChessGame {
                 if (!(square & 0x88)) {
                     if (isAlphabetCharacter(nextFenChar)) {
                         if (nextFenChar === PieceType.WHITE_KING) {
-                            PieceBaseClass.KING_SQUARES[PieceColor.WHITE] = square;
-                            // console.log("KING_SQUARES:", PieceBaseClass.KING_SQUARES);
+                            this.kingSquares[PieceColor.WHITE] = square;
                         } else if (nextFenChar === PieceType.BLACK_KING) {
-                            PieceBaseClass.KING_SQUARES[PieceColor.BLACK] = square;
-                            // console.log("KING_SQUARES:", PieceBaseClass.KING_SQUARES);
+                            this.kingSquares[PieceColor.BLACK] = square;
                         }
 
                         // Set the piece on board
@@ -368,10 +376,10 @@ export class ChessGame {
         if (nextFenChar !== '-') {
             while (nextFenChar !== ' ' && nextFenChar !== '') {
                 switch (nextFenChar) {
-                    case 'K': PieceBaseClass.CASTLE |= Castling.KC; break;
-                    case 'Q': PieceBaseClass.CASTLE |= Castling.QC; break;
-                    case 'k': PieceBaseClass.CASTLE |= Castling.kc; break;
-                    case 'q': PieceBaseClass.CASTLE |= Castling.qc; break;
+                    case 'K': this.castlingRights |= Castling.KC; break;
+                    case 'Q': this.castlingRights |= Castling.QC; break;
+                    case 'k': this.castlingRights |= Castling.kc; break;
+                    case 'q': this.castlingRights |= Castling.qc; break;
                     default: break;
                 }
                 nextFenChar = fenIterator.next().value;
@@ -448,8 +456,7 @@ export class ChessGame {
 
         // If a specific side is provided, use the MoveGenerator's generateMoves method
         if (side !== undefined) {
-            this.moveGenerator.generateMoves(this.boardState, side);
-            return this.legalMoves.legalMovesMap;
+            return this.moveGenerator.generateMoves(this.boardState, side, this.enpassant, this.castlingRights).legalMovesMap;
         }
 
         // Otherwise, iterate through the board and generate moves for all pieces
@@ -465,7 +472,8 @@ export class ChessGame {
                             this.boardState,
                             this.legalMoves,
                             this.enpassant,
-                            this.boardEvaluator
+                            this.boardEvaluator,
+                            this.castlingRights
                         );
                     }
                 }

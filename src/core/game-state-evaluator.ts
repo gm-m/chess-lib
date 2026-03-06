@@ -6,15 +6,15 @@ import { getSquareColor } from "../utils/utility";
 import { Board } from "./board";
 
 export class GameStateEvaluator {
-    public isCheckmate(sideToMove: PieceColor, moveGenerator: MoveGenerator): boolean {
-        const kingSquare = PieceBaseClass.KING_SQUARES[sideToMove];
+    public isCheckmate(sideToMove: PieceColor, moveGenerator: MoveGenerator, kingSquares: [Square, Square], castlingRights: number = 0): boolean {
+        const kingSquare = kingSquares[sideToMove];
         const opponentColor = sideToMove === PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
 
         if (!this.isSquareAttacked(kingSquare, opponentColor)) {
             return false; // Not in check, so not checkmate
         }
 
-        const legalMoveList = moveGenerator.generateMoves(this.boardState, sideToMove);
+        const legalMoveList = moveGenerator.generateMoves(this.boardState, sideToMove, false, castlingRights);
         for (const [fromSquare, toSquares] of legalMoveList.legalMovesMap) {
             for (const toSquare of toSquares) {
                 const originalPiece = this.boardState.getPiece(fromSquare);
@@ -24,16 +24,16 @@ export class GameStateEvaluator {
                 this.boardState.setPiece(toSquare, originalPiece);
                 this.boardState.setPiece(fromSquare, PieceType.EMPTY);
                 if (originalPiece === PieceType.WHITE_KING || originalPiece === PieceType.BLACK_KING) {
-                    PieceBaseClass.KING_SQUARES[sideToMove] = toSquare;
+                    kingSquares[sideToMove] = toSquare;
                 }
 
-                const isKingStillInCheck = this.isSquareAttacked(PieceBaseClass.KING_SQUARES[sideToMove], opponentColor);
+                const isKingStillInCheck = this.isSquareAttacked(kingSquares[sideToMove], opponentColor);
 
                 // Undo the move
                 this.boardState.setPiece(fromSquare, originalPiece);
                 this.boardState.setPiece(toSquare, capturedPiece);
                 if (originalPiece === PieceType.WHITE_KING || originalPiece === PieceType.BLACK_KING) {
-                    PieceBaseClass.KING_SQUARES[sideToMove] = fromSquare;
+                    kingSquares[sideToMove] = fromSquare;
                 }
 
                 if (!isKingStillInCheck) {
@@ -45,15 +45,15 @@ export class GameStateEvaluator {
         return true; // In check and no legal moves to escape it
     }
 
-    public isStaleMate(sideToMove: PieceColor, moveGenerator: MoveGenerator): boolean {
-        const kingSquare = PieceBaseClass.KING_SQUARES[sideToMove];
+    public isStaleMate(sideToMove: PieceColor, moveGenerator: MoveGenerator, kingSquares: [Square, Square], castlingRights: number = 0): boolean {
+        const kingSquare = kingSquares[sideToMove];
         const opponentColor = sideToMove === PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE;
 
         if (this.isSquareAttacked(kingSquare, opponentColor)) {
             return false; // In check, so not stalemate
         }
 
-        const legalMoveList = moveGenerator.generateMoves(this.boardState, sideToMove);
+        const legalMoveList = moveGenerator.generateMoves(this.boardState, sideToMove, false, castlingRights);
         return legalMoveList.legalMovesMap.size === 0;
     }
 

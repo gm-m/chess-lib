@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, test } from 'vitest';
 import { ChessGame } from "../chessboard/chess-game";
 import { PieceColor } from "../model/PieceColor.enum";
-import { Square } from '../model/model';
+import { Castling, Square } from '../model/model';
 import { MoveList } from '../move/move-list';
 import { generateKingMoves } from './king-moves';
 
@@ -22,7 +22,8 @@ describe("Test King Moves", () => {
             PieceColor.WHITE,
             chessGame.boardState,
             chessGame.boardEvaluator,
-            moveList
+            moveList,
+            chessGame.castlingRights as Castling
         );
         const expectedLegalMoves = ['h3', 'h4', 'f3', 'f4', 'g4'];
         const decodedLegalMoves = moveList.decodeLegalMoves();
@@ -42,7 +43,8 @@ describe("Test King Moves", () => {
             PieceColor.WHITE,
             chessGame.boardState,
             chessGame.boardEvaluator,
-            moveList
+            moveList,
+            chessGame.castlingRights as Castling
         );
         const expectedLegalMoves = ['f1', 'e2'];
         const decodedLegalMoves = moveList.decodeLegalMoves();
@@ -62,7 +64,8 @@ describe("Test King Moves", () => {
             PieceColor.WHITE,
             chessGame.boardState,
             chessGame.boardEvaluator,
-            moveList
+            moveList,
+            chessGame.castlingRights as Castling
         );
         const expectedLegalMoves = ['f1', 'g1'];
         const decodedLegalMoves = moveList.decodeLegalMoves();
@@ -82,7 +85,8 @@ describe("Test King Moves", () => {
             PieceColor.WHITE,
             chessGame.boardState,
             chessGame.boardEvaluator,
-            moveList
+            moveList,
+            chessGame.castlingRights as Castling
         );
         const expectedLegalMoves = ['f1'];
         const decodedLegalMoves = moveList.decodeLegalMoves();
@@ -102,7 +106,8 @@ describe("Test King Moves", () => {
             PieceColor.BLACK,
             chessGame.boardState,
             chessGame.boardEvaluator,
-            moveList
+            moveList,
+            chessGame.castlingRights as Castling
         );
         const expectedLegalMoves = ['d8', 'c8'];
         const decodedLegalMoves = moveList.decodeLegalMoves();

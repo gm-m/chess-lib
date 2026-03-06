@@ -48,16 +48,10 @@ export class PieceBaseClass implements Piece {
 
     static PAWN_CAPTURE_OFFSETS = [
         // White pawn capture offsets
-        [this.BISHOP_OFFSETS[2], this.BISHOP_OFFSETS[3]]
+        [this.BISHOP_OFFSETS[2], this.BISHOP_OFFSETS[3]],
         // Black pawn capture offsets
         [this.BISHOP_OFFSETS[0], this.BISHOP_OFFSETS[1]]
     ] as const;
-
-    // TODO: Replace hard coded value 116 with Square.e1 and 4 with Square.e8 enum
-    static KING_SQUARES: [Square, Square] = [116, 4];
-
-    // dec 15 => bin 1111 => both kings can castle to both sides
-    static CASTLE = 15 as const;
 
     constructor(pieceCoordinates: Square, pieceColor: PieceColor) {
         this.color = pieceColor;

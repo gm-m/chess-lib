@@ -13,6 +13,7 @@ export function generateKingMoves(
     board: Board,
     evaluator: GameStateEvaluator,
     moveList: MoveList,
+    castlingRights: Castling,
 ) {
     const isKing: boolean = (() => {
         const pieceAtCoordinate = board.getPiece(coordinates);
@@ -51,7 +52,7 @@ export function generateKingMoves(
         }
     }
 
-    const isKingSideCastlingAvailable: number = PieceBaseClass.CASTLE & (color === PieceColor.WHITE ? Castling.KC : Castling.kc);
+    const isKingSideCastlingAvailable: number = castlingRights & (color === PieceColor.WHITE ? Castling.KC : Castling.kc);
     if (isKingSideCastlingAvailable) {
         // Make sure there are empty squares between King & Rook
         const kingSideEmptySquares: boolean = (() => {
@@ -66,9 +67,9 @@ export function generateKingMoves(
             // Make sure king & next square are not under attack
             const kingSideSquareNotAttacked: boolean = (() => {
                 if (color === PieceColor.WHITE) {
-                    return !evaluator.isSquareAttacked(Square.e1, PieceColor.BLACK) && !evaluator.isSquareAttacked(Square.f1, PieceColor.BLACK);
+                    return [Square.e1, Square.f1].every(square => !evaluator.isSquareAttacked(square, PieceColor.BLACK));
                 } else {
-                    return !evaluator.isSquareAttacked(Square.e8, PieceColor.WHITE) && !evaluator.isSquareAttacked(Square.f8, PieceColor.WHITE);
+                    return [Square.e8, Square.f8].every(square => !evaluator.isSquareAttacked(square, PieceColor.WHITE));
                 }
             })();
 
@@ -88,8 +89,8 @@ export function generateKingMoves(
         }
     }
 
-    // Queen Side Castling
-    if (isKingSideCastlingAvailable) {
+    const isQueenSideCastlingAvailable: number = castlingRights & (color === PieceColor.WHITE ? Castling.QC : Castling.qc);
+    if (isQueenSideCastlingAvailable) {
         // Make sure there are empty squares between king & rook
         const queenSideEmptySquares: boolean = (() => {
             if (color === PieceColor.WHITE) {
@@ -103,9 +104,9 @@ export function generateKingMoves(
             // Make sure king & next square are not under attack
             const queenSideSquareNotAttacked: boolean = (() => {
                 if (color === PieceColor.WHITE) {
-                    return !evaluator.isSquareAttacked(Square.e1, PieceColor.BLACK) && !evaluator.isSquareAttacked(Square.d1, PieceColor.BLACK);
+                    return [Square.e1, Square.d1].every(square => !evaluator.isSquareAttacked(square, PieceColor.BLACK));
                 } else {
-                    return !evaluator.isSquareAttacked(Square.e8, PieceColor.WHITE) && !evaluator.isSquareAttacked(Square.d8, PieceColor.WHITE);
+                    return [Square.e8, Square.d8].every(square => !evaluator.isSquareAttacked(square, PieceColor.WHITE));
                 }
             })();
 
