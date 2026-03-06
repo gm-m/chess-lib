@@ -3,7 +3,7 @@ import { Square } from "../model/model";
 import { PieceColor } from "../model/PieceColor.enum";
 import { encodeMove } from "../move/move-invoker";
 import { MoveList } from "../move/move-list";
-import { BLACK_PIECES, PieceBaseClass, PieceType, WHITE_PIECES } from "../piece/piece";
+import { BLACK_PIECES, KNIGHT_OFFSETS, PieceType, WHITE_PIECES } from "../piece/piece";
 
 export function generateKnightMoves(
     coordinates: Square,
@@ -17,8 +17,8 @@ export function generateKnightMoves(
     })();
 
     if (isCurrentPlayerKnight) {
-        for (let index = 0; index < PieceBaseClass.KNIGHT_OFFSETS.length; index++) {
-            let targetSquare: Square = coordinates + PieceBaseClass.KNIGHT_OFFSETS[index];
+        for (let index = 0; index < KNIGHT_OFFSETS.length; index++) {
+            let targetSquare: Square = coordinates + KNIGHT_OFFSETS[index];
 
             // TODO: Check if it is possible to use while instead of if just to be consistent with the other pieces
             if (!(targetSquare & 0x88)) {

@@ -4,7 +4,7 @@ import { Square } from "../model/model";
 import { PieceColor } from "../model/PieceColor.enum";
 import { encodeMove } from "../move/move-invoker";
 import { MoveList } from "../move/move-list";
-import { PieceBaseClass, PIECES, PieceType, PROMOTION_PIECES } from "../piece/piece";
+import { BISHOP_OFFSETS, PAWN_OFFSETS, PIECES, PieceType, PROMOTION_PIECES } from "../piece/piece";
 
 export function generatePawnMoves(
     moveList: MoveList,
@@ -20,7 +20,7 @@ export function generatePawnMoves(
         return;
     }
 
-    const targetSquare: Square = fromSquare - PieceBaseClass.PAWN_OFFSETS[pieceColor];
+    const targetSquare: Square = fromSquare - PAWN_OFFSETS[pieceColor];
 
     // Pawn Promotion
     if (!(targetSquare & 0x88) && board.getPiece(targetSquare) === PieceType.EMPTY) {
@@ -80,7 +80,7 @@ export function generatePawnMoves(
     // White & Black Pawn Capture Moves
     for (let pawnOffset = 0; pawnOffset < 2; pawnOffset++) {
         // White pawn offsets are negative
-        let toSquare: number = fromSquare + PieceBaseClass.BISHOP_OFFSETS[pawnOffset + (pieceColor === PieceColor.WHITE ? 2 : 0)];
+        let toSquare: number = fromSquare + BISHOP_OFFSETS[pawnOffset + (pieceColor === PieceColor.WHITE ? 2 : 0)];
 
         if (!(toSquare & 0x88)) {
             // Capture pawn promotion

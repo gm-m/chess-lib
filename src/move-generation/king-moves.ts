@@ -5,7 +5,7 @@ import { Castling, Square } from "../model/model";
 import { PieceColor } from "../model/PieceColor.enum";
 import { encodeMove } from "../move/move-invoker";
 import { MoveList } from "../move/move-list";
-import { BLACK_PIECES, PieceBaseClass, PieceType, WHITE_PIECES } from "../piece/piece";
+import { BLACK_PIECES, KING_OFFSETS, PieceType, WHITE_PIECES } from "../piece/piece";
 
 export function generateKingMoves(
     coordinates: Square,
@@ -21,8 +21,8 @@ export function generateKingMoves(
     })();
 
     if (isKing) {
-        for (let index = 0; index < PieceBaseClass.KING_OFFSETS.length; index++) {
-            const targetSquare: Square = coordinates + PieceBaseClass.KING_OFFSETS[index];
+        for (let index = 0; index < KING_OFFSETS.length; index++) {
+            const targetSquare: Square = coordinates + KING_OFFSETS[index];
 
             // TODO: Check if this if is required also for the other pieces
             if (targetSquare < 0 || targetSquare > 127) {

@@ -28,6 +28,15 @@ export const PIECES: Map<PieceColor, PieceType[]> = new Map([
     [PieceColor.WHITE, WHITE_PIECES],
     [PieceColor.BLACK, BLACK_PIECES],
 ]);
+export const KNIGHT_OFFSETS = [33, 31, 18, 14, -33, -31, -18, -14] as const;
+export const BISHOP_OFFSETS = [15, 17, -15, -17] as const;
+export const ROOK_OFFSETS = [16, -16, 1, -1] as const;
+export const KING_OFFSETS = [16, -16, 1, -1, 15, 17, -15, -17] as const;
+export const PAWN_OFFSETS = [16, -16] as const;
+export const PAWN_CAPTURE_OFFSETS = [
+    [BISHOP_OFFSETS[2], BISHOP_OFFSETS[3]],
+    [BISHOP_OFFSETS[0], BISHOP_OFFSETS[1]]
+] as const;
 
 export interface Piece {
     color: PieceColor;
@@ -38,20 +47,6 @@ export class PieceBaseClass implements Piece {
     chessGame: ChessGame = new ChessGame();
     color: PieceColor;
     coordinates: Square;
-
-    // Piece move offsets
-    static KNIGHT_OFFSETS = [33, 31, 18, 14, -33, -31, -18, -14] as const;
-    static BISHOP_OFFSETS = [15, 17, -15, -17] as const;
-    static ROOK_OFFSETS = [16, -16, 1, -1] as const;
-    static KING_OFFSETS = [16, -16, 1, -1, 15, 17, -15, -17] as const;
-    static PAWN_OFFSETS = [16, -16] as const; // 16 -> Quite move
-
-    static PAWN_CAPTURE_OFFSETS = [
-        // White pawn capture offsets
-        [this.BISHOP_OFFSETS[2], this.BISHOP_OFFSETS[3]],
-        // Black pawn capture offsets
-        [this.BISHOP_OFFSETS[0], this.BISHOP_OFFSETS[1]]
-    ] as const;
 
     constructor(pieceCoordinates: Square, pieceColor: PieceColor) {
         this.color = pieceColor;

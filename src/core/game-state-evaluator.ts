@@ -1,7 +1,7 @@
 import { Square } from "../model/model";
 import { PieceColor } from "../model/PieceColor.enum";
 import { MoveGenerator } from "../move-generation/move-generator";
-import { PieceBaseClass, PieceType } from "../piece/piece";
+import { BISHOP_OFFSETS, KING_OFFSETS, KNIGHT_OFFSETS, PieceType, ROOK_OFFSETS } from "../piece/piece";
 import { getSquareColor } from "../utils/utility";
 import { Board } from "./board";
 
@@ -164,8 +164,8 @@ export class GameStateEvaluator {
         }
 
         // KNIGHTS
-        for (let index = 0; index < PieceBaseClass.KNIGHT_OFFSETS.length; index++) {
-            let offset = PieceBaseClass.KNIGHT_OFFSETS[index];
+        for (let index = 0; index < KNIGHT_OFFSETS.length; index++) {
+            let offset = KNIGHT_OFFSETS[index];
 
             if (!(square + offset & 0x88)) {
                 if (attackedFromColor === PieceColor.WHITE) {
@@ -181,8 +181,8 @@ export class GameStateEvaluator {
         }
 
         // BISHOPS & QUEENS
-        for (let index = 0; index < PieceBaseClass.BISHOP_OFFSETS.length; index++) {
-            let offset = PieceBaseClass.BISHOP_OFFSETS[index];
+        for (let index = 0; index < BISHOP_OFFSETS.length; index++) {
+            let offset = BISHOP_OFFSETS[index];
             let targetSquare: Square = square + offset;
 
             while (!(targetSquare & 0x88)) {
@@ -200,14 +200,14 @@ export class GameStateEvaluator {
                     break;
                 }
 
-                offset += PieceBaseClass.BISHOP_OFFSETS[index];
+                offset += BISHOP_OFFSETS[index];
                 targetSquare = square + offset;
             }
         }
 
         // ROOKS & QUEENS
-        for (let index = 0; index < PieceBaseClass.ROOK_OFFSETS.length; index++) {
-            let offset = PieceBaseClass.ROOK_OFFSETS[index];
+        for (let index = 0; index < ROOK_OFFSETS.length; index++) {
+            let offset = ROOK_OFFSETS[index];
             let targetSquare: Square = square + offset;
 
             while (!(targetSquare & 0x88)) {
@@ -225,14 +225,14 @@ export class GameStateEvaluator {
                     break;
                 }
 
-                offset += PieceBaseClass.ROOK_OFFSETS[index];
+                offset += ROOK_OFFSETS[index];
                 targetSquare = square + offset;
             }
         }
 
         // KINGS
-        for (let index = 0; index < PieceBaseClass.KING_OFFSETS.length; index++) {
-            let offset = PieceBaseClass.KING_OFFSETS[index];
+        for (let index = 0; index < KING_OFFSETS.length; index++) {
+            let offset = KING_OFFSETS[index];
 
             if (!(square + offset & 0x88)) {
                 if (attackedFromColor === PieceColor.WHITE) {

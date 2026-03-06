@@ -3,7 +3,7 @@ import { Square } from "../model/model";
 import { PieceColor } from "../model/PieceColor.enum";
 import { encodeMove } from "../move/move-invoker";
 import { MoveList } from "../move/move-list";
-import { BLACK_PIECES, PieceBaseClass, PieceType, WHITE_PIECES } from "../piece/piece";
+import { BISHOP_OFFSETS, BLACK_PIECES, PieceType, WHITE_PIECES } from "../piece/piece";
 
 export function generateBishopMoves(
     coordinates: Square,
@@ -21,7 +21,7 @@ export function generateBishopMoves(
 
     if (isCurrentPlayerBishopOrQueen) {
         for (let index = 0; index < 4; index++) {
-            let targetSquare: Square = coordinates + PieceBaseClass.BISHOP_OFFSETS[index];
+            let targetSquare: Square = coordinates + BISHOP_OFFSETS[index];
 
             // Loop over attack ray
             while (!(targetSquare & 0x88)) {
@@ -69,10 +69,10 @@ export function generateBishopMoves(
                 }
 
                 // Increment target square
-                targetSquare += PieceBaseClass.BISHOP_OFFSETS[index];
+                targetSquare += BISHOP_OFFSETS[index];
             }
 
-            targetSquare += PieceBaseClass.BISHOP_OFFSETS[index];
+            targetSquare += BISHOP_OFFSETS[index];
         }
     }
 

@@ -3,7 +3,7 @@ import { Square } from "../model/model";
 import { PieceColor } from "../model/PieceColor.enum";
 import { encodeMove } from "../move/move-invoker";
 import { MoveList } from "../move/move-list";
-import { BLACK_PIECES, PieceBaseClass, PieceType, WHITE_PIECES } from "../piece/piece";
+import { BLACK_PIECES, PieceType, ROOK_OFFSETS, WHITE_PIECES } from "../piece/piece";
 
 export function generateRookMoves(
     coordinates: Square,
@@ -21,7 +21,7 @@ export function generateRookMoves(
 
     if (isRookOrQueen) {
         for (let index = 0; index < 4; index++) {
-            let targetSquare: Square = coordinates + PieceBaseClass.ROOK_OFFSETS[index];
+            let targetSquare: Square = coordinates + ROOK_OFFSETS[index];
 
             while (!(targetSquare & 0x88)) {
                 let targetPiece: PieceType = board.getPiece(targetSquare);
@@ -64,7 +64,7 @@ export function generateRookMoves(
                     );
                 }
 
-                targetSquare += PieceBaseClass.ROOK_OFFSETS[index];
+                targetSquare += ROOK_OFFSETS[index];
             }
         }
     }
