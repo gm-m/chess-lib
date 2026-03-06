@@ -73,7 +73,7 @@ Returns a boolean indicating whether if `isStaleMate` or `isInsufficientMaterial
 
 ### .getAscii()
 
-Returns a string that rappresents the current position.
+Returns a string that represents the current position.
 
 ```ts
 
@@ -192,6 +192,10 @@ Returns a number indicating the current move.
 ### .getFen()
 
 Returns the FEN of the current position.
+
+### .getSideToMove()
+
+Returns the current side to move.
 
 ### .getMaterialAdvantage()
 

@@ -20,7 +20,22 @@ describe.todo("Test getFullMoveNumber", () => {
     });
 });
 
-describe.only("Test getFen", () => {
+describe("Test getSideToMove", () => {
+    const chessGame = new ChessGame();
+    const testCases = [
+        { fen: '4r1k1/b2N4/p1p1r2p/2Pp4/P4P2/2P3P1/7P/1R3R1K b - - 3 32', expectedOutput: 'b' },
+        { fen: '8/8/8/2p1pR2/3rk1P1/2K5/8/8 w - - 6 67', expectedOutput: 'w' },
+    ];
+
+    testCases.forEach(({ fen, expectedOutput }, index) => {
+        test(`getSideToMove for testCase with index: ${index}`, () => {
+            chessGame.loadFen(fen);
+            expect(chessGame.getSideToMove()).toEqual(expectedOutput);
+        });
+    });
+});
+
+describe("Test getFen", () => {
     const chessGame = new ChessGame();
     const testCases = [
         { fen: 'r3r1k1/p2qppbp/1n4p1/3b4/1QpP3B/4PN2/P3BPPP/1RR3K1 b - - 8 17' },

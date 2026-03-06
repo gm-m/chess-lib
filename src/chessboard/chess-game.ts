@@ -162,6 +162,10 @@ export class ChessGame {
         [PieceColor.BLACK, [112, 119]],
     ]);
 
+    public getSideToMove() {
+      return decodePieceColor(this.side);
+    }
+
     public movePiece(move: MakeMove) {
         this.moveInvoker.executeMove(move);
     }
@@ -297,8 +301,6 @@ export class ChessGame {
 
     public loadFen(fen: string) {
         this.resetBoard();
-
-        console.log("FEN: ", fen);
 
         // PIECES
         const fenIterator = stringIterator(fen);
